@@ -32,6 +32,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+// Sorry for that code, I promise, I can do better! But... I'm tired
+
 @OnlyIn(Dist.CLIENT)
 public class AdvancedBookScreen extends Screen {
     public static final ResourceLocation BOOK_LOCATION = new ResourceLocation(AdvancedBook.MODID, "textures/gui/book.png");
@@ -308,7 +310,7 @@ public class AdvancedBookScreen extends Screen {
         }));
         dropdownY += 20;
         this.addElementButtons.add(createElementButton(Component.translatable("gui.advancedbook.stringElement"), dropdownX, dropdownY, 492, 60, (idk) -> {
-            getCurrentPage().add(new StringElement(0, 0, 60, 20, Color.HSBtoRGB(this.hueSlider.getValue(), this.sbSliders.getSaturation(), this.sbSliders.getBrightness()), Component.literal("Some text")));
+            getCurrentPage().add(new StringElement(0, 0, 60, 20, Color.HSBtoRGB(this.hueSlider.getValue(), this.sbSliders.getSaturation(), this.sbSliders.getBrightness()), Component.translatable("gui.advancedbook.defaultText")));
         }));
         dropdownY += 20;
         this.addElementButtons.add(createElementButton(Component.translatable("gui.advancedbook.itemElement"), dropdownX, dropdownY, 492, 80, (idk) -> {

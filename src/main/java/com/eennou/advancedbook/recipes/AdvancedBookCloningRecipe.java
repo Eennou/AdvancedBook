@@ -102,14 +102,14 @@ public class AdvancedBookCloningRecipe implements CraftingRecipe {
         return new ItemStack(ModItems.BOOK.get());
     }
 
-//    @Override
-//    public NonNullList<Ingredient> getIngredients() {
-//        NonNullList<Ingredient> ingredients = NonNullList.create();
-//        ingredients.add(Ingredient.of(ModItems.BOOK.get()));
-//        ingredients.add(Ingredient.of(ModItems.BOOK.get()));
-//        ingredients.add(Ingredient.of(ModItems.PAINT.get()));
-//        return ingredients;
-//    }
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        ingredients.add(Ingredient.of(ModItems.BOOK.get()));
+        ingredients.add(Ingredient.of(ModItems.BOOK.get()));
+        ingredients.add(Ingredient.of(ModItems.PAINT.get()));
+        return ingredients;
+    }
 
     @Override
     public ResourceLocation getId() {

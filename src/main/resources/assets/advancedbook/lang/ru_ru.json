@@ -1,0 +1,21 @@
+{
+  "gui.advancedbook.add": "Добавить",
+  "gui.advancedbook.addPage": "Доб-ть стр.",
+  "gui.advancedbook.copy": "Копировать",
+  "gui.advancedbook.cut": "Вырезать",
+  "gui.advancedbook.defaultText": "Какой-то текст",
+  "gui.advancedbook.deletePage": "Удалить стр.",
+  "gui.advancedbook.elementDelete": "Удалить Элемент",
+  "gui.advancedbook.hAlign": "Горизонтальное Выравнивание",
+  "gui.advancedbook.itemElement": "Предмет",
+  "gui.advancedbook.keepOpen": "Ост. открытой",
+  "gui.advancedbook.moveToBG": "На Задний план",
+  "gui.advancedbook.moveToFG": "На Передний план",
+  "gui.advancedbook.pages": "Страниц: %1$s",
+  "gui.advancedbook.paste": "Вставить",
+  "gui.advancedbook.rectangleElement": "Прямоугольник",
+  "gui.advancedbook.stringElement": "Текст",
+  "gui.advancedbook.vAlign": "Вертикальное Выравнивание",
+  "item.advancedbook.book": "Книга",
+  "item.advancedbook.paint": "Краска"
+}

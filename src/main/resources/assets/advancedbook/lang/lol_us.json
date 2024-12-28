@@ -1,0 +1,21 @@
+{
+  "gui.advancedbook.add": "add",
+  "gui.advancedbook.addPage": "add papyrus",
+  "gui.advancedbook.copy": "Copy",
+  "gui.advancedbook.cut": "Cut",
+  "gui.advancedbook.defaultText": "cars love boxez",
+  "gui.advancedbook.deletePage": "del papyrus",
+  "gui.advancedbook.elementDelete": "del element",
+  "gui.advancedbook.hAlign": "walk aling",
+  "gui.advancedbook.itemElement": "itum",
+  "gui.advancedbook.keepOpen": "dont cloz!",
+  "gui.advancedbook.moveToBG": "move behind",
+  "gui.advancedbook.moveToFG": "move front",
+  "gui.advancedbook.pages": "papyruses: %1$s",
+  "gui.advancedbook.paste": "Paste",
+  "gui.advancedbook.rectangleElement": "straigth thingy",
+  "gui.advancedbook.stringElement": "writ",
+  "gui.advancedbook.vAlign": "fly aling",
+  "item.advancedbook.book": "papyruses",
+  "item.advancedbook.paint": "colorful!!"
+}

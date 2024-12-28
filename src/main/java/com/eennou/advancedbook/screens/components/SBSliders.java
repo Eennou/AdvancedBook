@@ -20,7 +20,7 @@ public class SBSliders extends AbstractWidget {
     public SBSliders(int x, int y, float initialSaturation, float initialBrightness, SBSliders.OnChange callback) {
         super(x, y, 77, 77, Component.empty());
         this.saturation = initialSaturation;
-        this.brightness = initialBrightness;
+        this.brightness = 1 - initialBrightness;
         this.callback = callback;
         this.color = 0xFFFF0000;
     }
