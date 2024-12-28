@@ -4,14 +4,13 @@ import com.eennou.advancedbook.items.ModItems;
 import com.eennou.advancedbook.items.ModRecipes;
 import com.eennou.advancedbook.networking.*;
 import com.mojang.logging.LogUtils;
-import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -42,8 +41,8 @@ public class AdvancedBook
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
-    public static final RegistryObject<CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("advancedbook_tab", () -> CreativeModeTab.builder()
-            .withTabsBefore(CreativeModeTabs.COMBAT)
+    public static final RegistryObject<CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("advancedbook", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.advancedbook"))
             .icon(() -> ModItems.PAINT.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(ModItems.BOOK.get());

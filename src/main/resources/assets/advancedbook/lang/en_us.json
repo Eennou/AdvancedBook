@@ -17,5 +17,6 @@
   "gui.advancedbook.stringElement": "Text",
   "gui.advancedbook.vAlign": "Vertical Alignment",
   "item.advancedbook.book": "Book",
-  "item.advancedbook.paint": "Paint"
+  "item.advancedbook.paint": "Paint",
+  "itemGroup.advancedbook": "Advanced Book"
 }

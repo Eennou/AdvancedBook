@@ -130,6 +130,7 @@ public class AdvancedBookScreen extends Screen {
         this.signButton.visible = !signed;
         this.addPageButton.visible = !signed;
         this.deletePageButton.visible = !signed;
+        this.bookmarkButton.visible = !signed;
     }
 
     private void loadBookmarks() {
@@ -245,7 +246,9 @@ public class AdvancedBookScreen extends Screen {
 
     @Override
     public boolean shouldCloseOnEsc() {
+        AdvancedBook.PacketHandler.sendToServer(new EditBookC2SPacket(this.currentPage, this.getCurrentPage()));
         closeBook();
+        saveBookmarks();
         return super.shouldCloseOnEsc();
     }
 
@@ -268,9 +271,9 @@ public class AdvancedBookScreen extends Screen {
 
         this.confirmSignButton = this.addRenderableWidget(Button.builder(Component.translatable("book.finalizeButton"), (p_289629_) -> {
             AdvancedBook.PacketHandler.sendToServer(new EditBookC2SPacket(this.currentPage, this.getCurrentPage()));
+            saveBookmarks();
             AdvancedBook.PacketHandler.sendToServer(new SignBookC2SPacket(this.titleEditBox.getValue()));
             closeBook();
-            saveBookmarks();
             this.onClose();
         }).bounds(this.width / 2 - 100, 196, 98, 20).build());
         this.cancelSignButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), (p_289629_) -> {
@@ -351,6 +354,9 @@ public class AdvancedBookScreen extends Screen {
         this.cutButton.visible = !isSigning;
         this.pasteButton.visible = !isSigning;
         this.addButton.visible = !isSigning;
+        this.addPageButton.visible = !isSigning;
+        this.deletePageButton.visible = !isSigning;
+        this.bookmarkButton.visible = !isSigning;
         changeSelectedElement(-1);
     }
 
@@ -548,7 +554,7 @@ public class AdvancedBookScreen extends Screen {
         GL11.glColorMask(true, true, true, true);
         Bookmark currentBookmark = null;
         for (Bookmark bookmark : this.bookmarks) {
-            if (bookmark.page == this.currentPage) {
+            if (bookmark.page == this.currentPage && !this.isSigning) {
                 currentBookmark = bookmark;
             } else {
                 this.renderBookmark(guiGraphics, bookmark.position, FastColor.ARGB32.red(bookmark.color) / 255.0F, FastColor.ARGB32.green(bookmark.color) / 255.0F, FastColor.ARGB32.blue(bookmark.color) / 255.0F, false);
