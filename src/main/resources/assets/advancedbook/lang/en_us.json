@@ -1,0 +1,20 @@
+{
+  "item.advancedbook.book": "Book",
+  "item.advancedbook.paint": "Paint",
+  "gui.advancedbook.keepOpen": "Keep Open",
+  "gui.advancedbook.add": "Add",
+  "gui.advancedbook.rectangleElement": "Rectangle",
+  "gui.advancedbook.stringElement": "Text",
+  "gui.advancedbook.itemElement": "Item",
+  "gui.advancedbook.hAlign": "Horizontal Alignment",
+  "gui.advancedbook.vAlign": "Vertical Alignment",
+  "gui.advancedbook.elementDelete": "Delete Element",
+  "gui.advancedbook.moveToBG": "Move to Background",
+  "gui.advancedbook.moveToFG": "Move to Foreground",
+  "gui.advancedbook.paste": "Paste",
+  "gui.advancedbook.cut": "Cut",
+  "gui.advancedbook.copy": "Copy",
+  "gui.advancedbook.deletePage": "Delete Page",
+  "gui.advancedbook.addPage": "Add Page",
+  "gui.advancedbook.pages": "pages: %1$s"
+}

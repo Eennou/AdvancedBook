@@ -1,0 +1,38 @@
+{
+  "parent": "item/generated",
+  "display": {
+    "gui": {
+      "scale": [1.5, 1.5, 1.5]
+    },
+    "fixed": {
+      "scale": [1.5, 1.5, 1.5],
+      "translation": [1, 0, 0]
+    },
+    "ground": {
+      "scale": [0.75, 0.75, 0.75]
+    },
+    "firstperson_righthand": {
+      "scale": [1.5, 1.5, 1.5],
+      "rotation": [-25, -30, 0],
+      "translation": [4, 0, 0]
+    },
+    "firstperson_lefthand": {
+      "scale": [-1.5, 1.5, -1.5],
+      "rotation": [-25, -30, 0],
+      "translation": [4, 0, 0]
+    },
+    "thirdperson_righthand": {
+      "scale": [0.75, 0.75, 0.75],
+      "rotation": [0, 0, 45],
+      "translation": [-2, 2, 0]
+    },
+    "thirdperson_lefthand": {
+      "scale": [0.75, 0.75, 0.75],
+      "rotation": [0, 0, -45],
+      "translation": [-1, 2, 0]
+    }
+  },
+  "textures": {
+    "layer0": "advancedbook:item/opened_book"
+  }
+}

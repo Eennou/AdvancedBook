@@ -1,0 +1,16 @@
+{
+  "parent": "item/generated",
+  "display": {
+  },
+  "textures": {
+    "layer0": "advancedbook:item/book"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "advancedbook:opened": 1
+      },
+      "model": "advancedbook:item/opened_book"
+    }
+  ]
+}
