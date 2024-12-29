@@ -4,6 +4,8 @@ import com.eennou.advancedbook.screens.AdvancedBookScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public abstract class BookElement implements Cloneable {
     public int x;
@@ -37,7 +39,9 @@ public abstract class BookElement implements Cloneable {
         tag.putInt("height", this.height);
         return tag;
     }
+    @OnlyIn(Dist.CLIENT)
     public abstract void render(GuiGraphics guiGraphics, int xOffset, int yOffset);
+    @OnlyIn(Dist.CLIENT)
     public void renderSelection(GuiGraphics guiGraphics, int xOffset, int yOffset) {
         guiGraphics.blitNineSlicedSized(AdvancedBookScreen.BOOK_LOCATION, x + xOffset - 1, y + yOffset - 1, width + 2, height + 2, 8, 8, 32, 32, 0, 218, 512, 256);
     }

@@ -4,6 +4,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class RectangleElement extends BookElement implements ColorableBookElement {
     protected int color;
@@ -26,6 +28,7 @@ public class RectangleElement extends BookElement implements ColorableBookElemen
         return this.color;
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void render(GuiGraphics guiGraphics, int xOffset, int yOffset) {
         guiGraphics.fill(x + xOffset, y + yOffset, x + xOffset + width, y + yOffset + height, color);

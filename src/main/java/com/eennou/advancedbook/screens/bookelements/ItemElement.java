@@ -1,15 +1,13 @@
 package com.eennou.advancedbook.screens.bookelements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.lwjgl.opengl.GL11;
-
 import java.util.Objects;
 
 public class ItemElement extends BookElement {
@@ -38,6 +36,7 @@ public class ItemElement extends BookElement {
         return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.itemStack.getItem())).toString();
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void render(GuiGraphics guiGraphics, int xOffset, int yOffset) {
         int minSide = Math.min(this.width, this.height);

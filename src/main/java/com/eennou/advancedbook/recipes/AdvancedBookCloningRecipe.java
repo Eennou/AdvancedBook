@@ -1,6 +1,5 @@
 package com.eennou.advancedbook.recipes;
 
-import com.eennou.advancedbook.AdvancedBook;
 import com.eennou.advancedbook.items.ModItems;
 import com.eennou.advancedbook.items.ModRecipes;
 import com.google.gson.JsonObject;

@@ -2,6 +2,7 @@ package com.eennou.advancedbook.networking;
 
 import com.eennou.advancedbook.items.ModItems;
 import com.eennou.advancedbook.screens.AdvancedBookScreen;
+import com.eennou.advancedbook.utils.Bookmark;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -15,20 +16,20 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class UpdateBookmarksC2SPacket {
-    private final List<AdvancedBookScreen.Bookmark> bookmarks;
-    public UpdateBookmarksC2SPacket(List<AdvancedBookScreen.Bookmark> bookmarks) {
+    private final List<Bookmark> bookmarks;
+    public UpdateBookmarksC2SPacket(List<Bookmark> bookmarks) {
         this.bookmarks = bookmarks;
     }
     public UpdateBookmarksC2SPacket(FriendlyByteBuf buf) {
         this.bookmarks = new ArrayList<>();
         byte bookmarkCount = buf.readByte();
         for (int i = 0; i < bookmarkCount; i++) {
-            this.bookmarks.add(new AdvancedBookScreen.Bookmark(buf.readInt(), buf.readInt(), buf.readInt()));
+            this.bookmarks.add(new Bookmark(buf.readInt(), buf.readInt(), buf.readInt()));
         }
     }
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeByte(this.bookmarks.size());
-        for (AdvancedBookScreen.Bookmark bookmark : this.bookmarks) {
+        for (Bookmark bookmark : this.bookmarks) {
             buf.writeInt(bookmark.page);
             buf.writeInt(bookmark.position);
             buf.writeInt(bookmark.color);
@@ -45,7 +46,7 @@ public class UpdateBookmarksC2SPacket {
                 return;
             }
             ListTag bookmarksTag = new ListTag();
-            for (AdvancedBookScreen.Bookmark bookmark : this.bookmarks) {
+            for (Bookmark bookmark : this.bookmarks) {
                 bookmarksTag.add(bookmark.toCompound());
             }
             tag.put("bookmarks", bookmarksTag);

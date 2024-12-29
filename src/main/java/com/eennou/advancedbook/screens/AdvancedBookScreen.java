@@ -7,6 +7,7 @@ import com.eennou.advancedbook.screens.components.DropRightButton;
 import com.eennou.advancedbook.screens.components.ElementAddButton;
 import com.eennou.advancedbook.screens.components.HueSlider;
 import com.eennou.advancedbook.screens.components.SBSliders;
+import com.eennou.advancedbook.utils.Bookmark;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
@@ -72,25 +73,6 @@ public class AdvancedBookScreen extends Screen {
     private Button cancelSignButton;
     private EditBox titleEditBox;
     private List<Bookmark> bookmarks;
-
-    public static class Bookmark {
-        public int page;
-        public int position;
-        public int color;
-
-        public Bookmark(int page, int position, int color) {
-            this.page = page;
-            this.position = position;
-            this.color = color;
-        }
-        public CompoundTag toCompound() {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("page", this.page);
-            tag.putInt("position", this.position);
-            tag.putInt("color", this.color);
-            return tag;
-        }
-    }
 
     public AdvancedBookScreen(ItemStack itemstack) {
         super(GameNarrator.NO_TITLE);

@@ -1,18 +1,13 @@
 package com.eennou.advancedbook.networking;
 
-import com.eennou.advancedbook.AdvancedBook;
 import com.eennou.advancedbook.items.ModItems;
 import com.eennou.advancedbook.screens.bookelements.BookElement;
 import com.eennou.advancedbook.screens.bookelements.ItemElement;
 import com.eennou.advancedbook.screens.bookelements.RectangleElement;
 import com.eennou.advancedbook.screens.bookelements.StringElement;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 

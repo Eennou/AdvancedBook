@@ -1,9 +1,7 @@
 package com.eennou.advancedbook.networking;
 
 import com.eennou.advancedbook.items.ModItems;
-import com.eennou.advancedbook.screens.bookelements.BookElement;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;

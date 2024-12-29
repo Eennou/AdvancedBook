@@ -1,13 +1,10 @@
 package com.eennou.advancedbook.integrations;
 
 import com.eennou.advancedbook.AdvancedBook;
-import com.eennou.advancedbook.recipes.AdvancedBookCloningRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,14 +7,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 public class StringElement extends BookElement implements ColorableBookElement {
     protected int color;
-    protected Font font;
     protected Component text;
     protected float hAlign;
     protected float vAlign;
@@ -22,7 +22,6 @@ public class StringElement extends BookElement implements ColorableBookElement {
     public StringElement(int x, int y, int width, int height, int color, Component text) {
         super(x, y, width, height);
         this.color = color;
-        this.font = Minecraft.getInstance().font;
         this.text = text;
         this.hAlign = 0;
         this.vAlign = 0;
@@ -40,7 +39,6 @@ public class StringElement extends BookElement implements ColorableBookElement {
         this.hAlign = tag.getFloat("hAlign");
         this.vAlign = tag.getFloat("vAlign");
         this.color = tag.getInt("color");
-        this.font = Minecraft.getInstance().font;
         this.text = Component.literal(tag.getString("text"));
     }
     @Override
@@ -77,13 +75,15 @@ public class StringElement extends BookElement implements ColorableBookElement {
         return this.vAlign;
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void render(GuiGraphics guiGraphics, int xOffset, int yOffset) {
-        List<FormattedCharSequence> lines = this.font.split(this.text, this.width + 1);
-        int maxWidth = lines.stream().map((x) -> this.font.width(x)).max(Comparator.naturalOrder()).orElse(10);
+        Font font = Minecraft.getInstance().font;
+        List<FormattedCharSequence> lines = font.split(this.text, this.width + 1);
+        int maxWidth = lines.stream().map((x) -> font.width(x)).max(Comparator.naturalOrder()).orElse(10);
         for (FormattedCharSequence line : lines) {
-            guiGraphics.drawString(this.font, line, (int)(x + xOffset + (this.width - this.font.width(line)) * this.hAlign), (int)(y + yOffset + (this.height - this.font.lineHeight * lines.size()) * this.vAlign), color, false);
-            yOffset += this.font.lineHeight;
+            guiGraphics.drawString(font, line, (int)(x + xOffset + (this.width - font.width(line)) * this.hAlign), (int)(y + yOffset + (this.height - font.lineHeight * lines.size()) * this.vAlign), color, false);
+            yOffset += font.lineHeight;
         }
     }
     public void toBytes(FriendlyByteBuf buf) {

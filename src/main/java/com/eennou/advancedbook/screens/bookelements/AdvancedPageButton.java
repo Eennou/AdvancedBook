@@ -3,9 +3,11 @@ package com.eennou.advancedbook.screens.bookelements;
 import com.eennou.advancedbook.screens.AdvancedBookScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.gui.screens.inventory.PageButton;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class AdvancedPageButton extends PageButton {
     private final boolean isForward;
     public AdvancedPageButton(int p_99225_, int p_99226_, boolean isForward, OnPress p_99228_, boolean p_99229_) {

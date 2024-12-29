@@ -10,10 +10,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -54,7 +52,6 @@ public class AdvancedBook
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::onClientSetup);
 
         ModItems.register(modEventBus);
         ModRecipes.register(modEventBus);
@@ -88,32 +85,14 @@ public class AdvancedBook
             .consumerMainThread(UpdateBookmarksC2SPacket::handle)
             .add();
 
-        // Register the item to a creative tab
-        modEventBus.addListener(this::addCreative);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-    }
-    private void onClientSetup(FMLClientSetupEvent event)
-    {
-        event.enqueueWork(() ->
-        {
-            ItemProperties.register(ModItems.BOOK.get(), new ResourceLocation(MODID, "opened"),
-                    (itemstack, world, entity, some_int) -> itemstack.getOrCreateTag().contains("openedPage") ? 1.0F : 0.0F
-            );
-        });
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
 
-    }
-
-    // Add the example block item to the building blocks tab
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-//        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES)
-//            event.accept(ModItems.BOOK);
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
@@ -148,14 +127,15 @@ public class AdvancedBook
         }
     }
 
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-
+            ItemProperties.register(ModItems.BOOK.get(), new ResourceLocation(MODID, "opened"),
+                    (itemstack, world, entity, some_int) -> itemstack.getOrCreateTag().contains("openedPage") ? 1.0F : 0.0F
+            );
         }
     }
 }
