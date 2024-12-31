@@ -662,13 +662,6 @@ public class AdvancedBookScreen extends Screen {
             default -> 0;
         };
         for (BookElement element : this.getCurrentPage()) {
-//            boolean validSnap = switch (direction) {
-//                case 0, 2 ->
-//                        rangesIntersect(this.getCurrentElement().x, this.getCurrentElement().width, element.x, element.width);
-//                case 1, 3 ->
-//                        rangesIntersect(this.getCurrentElement().y, this.getCurrentElement().height, element.y, element.height);
-//                default -> false;
-//            };
             resultSnap = switch (direction) {
                 case 0 -> { // SNAPPING UP NEAREST
                     int bottomPos = element.y + element.height;
@@ -690,10 +683,6 @@ public class AdvancedBookScreen extends Screen {
             };
         }
         return resultSnap;
-    }
-
-    private boolean rangesIntersect(int aMin, int aLength, int bMin, int bLength) {
-        return !(((aMin + aLength) < bMin) || ((bMin + bLength) < aMin));
     }
 
     @Override
