@@ -605,31 +605,95 @@ public class AdvancedBookScreen extends Screen {
         }
         AdvancedBook.LOGGER.debug("Key: {}|{}|{}", key, p_96553_, modifiers);
         boolean ctrl = (modifiers & 0b10) == 0b10;
+        boolean shift = (modifiers & 0b1) == 0b1;
         int step = ctrl ? 5 : 1;
-        switch (key) {
-            case 262: // RIGHT
-                this.getCurrentElement().x += step;
-                break;
-            case 263: // LEFT
-                this.getCurrentElement().x -= step;
-                break;
-            case 264: // DOWN
-                this.getCurrentElement().y += step;
-                break;
-            case 265: // UP
-                this.getCurrentElement().y -= step;
-                break;
+        if (shift) {
+            switch (key) {
+                case 262: // RIGHT
+                    this.getCurrentElement().x = getSnap(1) - this.getCurrentElement().width;
+                    break;
+                case 263: // LEFT
+                    this.getCurrentElement().x = getSnap(3);
+                    break;
+                case 264: // DOWN
+                    this.getCurrentElement().y = getSnap(2) - this.getCurrentElement().height;
+                    break;
+                case 265: // UP
+                    this.getCurrentElement().y = getSnap(0);
+                    break;
+            }
+        } else {
+            switch (key) {
+                case 262: // RIGHT
+                    this.getCurrentElement().x += step;
+                    break;
+                case 263: // LEFT
+                    this.getCurrentElement().x -= step;
+                    break;
+                case 264: // DOWN
+                    this.getCurrentElement().y += step;
+                    break;
+                case 265: // UP
+                    this.getCurrentElement().y -= step;
+                    break;
+            }
         }
-        this.setFocused(null);
+        if (262 <= key && key <= 265) {
+            this.setFocused(null);
+        }
         return true;
     }
 
-    @Override
-    public boolean keyReleased(int key, int p_94716_, int p_94717_) {
-        if (super.keyReleased(key, p_94716_, p_94717_)) {
-            return true;
+    private int getSnap(int direction) {
+        int idk = switch (direction) {
+            case 0 -> // UP
+                this.getCurrentElement().y;
+            case 1 -> // RIGHT
+                this.getCurrentElement().x + this.getCurrentElement().width;
+            case 2 -> // DOWN
+                this.getCurrentElement().y + this.getCurrentElement().height;
+            case 3 -> // LEFT
+                this.getCurrentElement().x;
+            default -> throw new IllegalStateException("Unexpected direction: " + direction);
+        };
+        int resultSnap = switch (direction) {
+            case 1 -> 132;
+            case 2 -> 165;
+            default -> 0;
+        };
+        for (BookElement element : this.getCurrentPage()) {
+//            boolean validSnap = switch (direction) {
+//                case 0, 2 ->
+//                        rangesIntersect(this.getCurrentElement().x, this.getCurrentElement().width, element.x, element.width);
+//                case 1, 3 ->
+//                        rangesIntersect(this.getCurrentElement().y, this.getCurrentElement().height, element.y, element.height);
+//                default -> false;
+//            };
+            resultSnap = switch (direction) {
+                case 0 -> { // SNAPPING UP NEAREST
+                    int bottomPos = element.y + element.height;
+                    yield (idk > bottomPos && resultSnap < bottomPos) ? bottomPos : resultSnap;
+                }
+                case 1 -> { // SNAPPING RIGHT NEAREST
+                    int leftPos = element.x;
+                    yield (idk < leftPos && resultSnap > leftPos) ? leftPos : resultSnap;
+                }
+                case 2 -> { // SNAPPING DOWN NEAREST
+                    int upPos = element.y;
+                    yield (idk < upPos && resultSnap > upPos) ? upPos : resultSnap;
+                }
+                case 3 -> { // SNAPPING LEFT NEAREST
+                    int rightPos = element.x + element.width;
+                    yield (idk > rightPos && resultSnap < rightPos) ? rightPos : resultSnap;
+                }
+                default -> 0;
+            };
         }
-        return true;
+        return resultSnap;
+    }
+
+    private boolean rangesIntersect(int aMin, int aLength, int bMin, int bLength) {
+        return !(((aMin + aLength) < bMin) || ((bMin + bLength) < aMin));
     }
 
     @Override
@@ -729,30 +793,30 @@ public class AdvancedBookScreen extends Screen {
         }
         switch (cornerSelected) {
             case 0:
-                mouseX -= 4;
-                mouseY -= 4;
+                mouseX -= 2;
+                mouseY -= 2;
                 element.width = (element.x + element.width) - ((int) mouseX - xOffset);
                 element.height = (element.y + element.height) - ((int) mouseY - yOffset);
                 element.x = (int) mouseX - xOffset;
                 element.y = (int) mouseY - yOffset;
                 break;
             case 1:
-                mouseX += 4;
-                mouseY -= 4;
+                mouseX += 2;
+                mouseY -= 2;
                 element.width = (int) (mouseX - xOffset - element.x);
                 element.height = (element.y + element.height) - ((int) mouseY - yOffset);
                 element.y = (int) mouseY - yOffset;
                 break;
             case 2:
-                mouseX -= 4;
-                mouseY += 4;
+                mouseX -= 2;
+                mouseY += 2;
                 element.width = (element.x + element.width) - ((int) mouseX - xOffset);
                 element.height = (int) (mouseY - yOffset - element.y);
                 element.x = (int) mouseX - xOffset;
                 break;
             case 3:
-                mouseX += 4;
-                mouseY += 4;
+                mouseX += 2;
+                mouseY += 2;
                 element.width = (int) (mouseX - xOffset - element.x);
                 element.height = (int) (mouseY - yOffset - element.y);
                 break;
@@ -762,9 +826,15 @@ public class AdvancedBookScreen extends Screen {
                 break;
         }
         if (element.width < 16) {
+            if (cornerSelected == 0 || cornerSelected == 2) {
+                element.x += element.width - 16;
+            }
             element.width = 16;
         }
         if (element.height < 16) {
+            if (cornerSelected == 0 || cornerSelected == 1) {
+                element.y += element.height - 16;
+            }
             element.height = 16;
         }
         return false;
