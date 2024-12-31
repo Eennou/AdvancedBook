@@ -43,6 +43,7 @@ public abstract class BookElement implements Cloneable {
     public abstract void render(GuiGraphics guiGraphics, int xOffset, int yOffset);
     @OnlyIn(Dist.CLIENT)
     public void renderSelection(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+        guiGraphics.blit(AdvancedBookScreen.BOOK_LOCATION, x + xOffset - 23, y + yOffset + height + 2, 56, 242, 21, 14, 512, 256);
         guiGraphics.blitNineSlicedSized(AdvancedBookScreen.BOOK_LOCATION, x + xOffset - 1, y + yOffset - 1, width + 2, height + 2, 8, 8, 32, 32, 0, 218, 512, 256);
     }
 

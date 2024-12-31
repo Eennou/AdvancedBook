@@ -127,7 +127,7 @@ public class AdvancedBookScreen extends Screen {
         this.hueSlider = this.addRenderableWidget(new HueSlider(i + 186 + 78, 33, 0, (slider) -> {
             this.sbSliders.setColor(Color.HSBtoRGB(slider.getValue(), 1, 1));
             if (selectedElement > -1) {
-                BookElement element = pages.get(this.currentPage).get(selectedElement);
+                BookElement element = this.getCurrentElement();
                 if (element instanceof ColorableBookElement) {
                     ((ColorableBookElement) element).setColor(Color.HSBtoRGB(slider.getValue(), this.sbSliders.getSaturation(), this.sbSliders.getBrightness()));
                 }
@@ -137,7 +137,7 @@ public class AdvancedBookScreen extends Screen {
         }));
         this.sbSliders = this.addRenderableWidget(new SBSliders(i + 186, 33, 0, 0, (sliders) -> {
             if (selectedElement > -1) {
-                BookElement element = pages.get(this.currentPage).get(selectedElement);
+                BookElement element = this.getCurrentElement();
                 if (element instanceof ColorableBookElement) {
                     ((ColorableBookElement) element).setColor(Color.HSBtoRGB(this.hueSlider.getValue(), sliders.getSaturation(), sliders.getBrightness()));
                 }
@@ -178,7 +178,7 @@ public class AdvancedBookScreen extends Screen {
             int finalButton = button;
             this.alignElementButtons.add(this.addRenderableWidget(new ImageButton(i + 186 + button * 20, 140, 20, 20, 356 + button * 20, 182, 20, BOOK_LOCATION, 512, 256, (idk) -> {
                 if (this.selectedElement != -1) {
-                    BookElement element = getCurrentPage().get(this.selectedElement);
+                    BookElement element = this.getCurrentElement();
                     if (element instanceof StringElement) {
                         ((StringElement) element).setHAlign(finalButton * 0.5F);
                     }
@@ -190,7 +190,7 @@ public class AdvancedBookScreen extends Screen {
             int finalButton = button;
             this.alignElementButtons.add(this.addRenderableWidget(new ImageButton(i + 186 + 65 + button * 20, 140, 20, 20, 416 + button * 20, 182, 20, BOOK_LOCATION, 512, 256, (idk) -> {
                 if (this.selectedElement != -1) {
-                    BookElement element = getCurrentPage().get(this.selectedElement);
+                    BookElement element = this.getCurrentElement();
                     if (element instanceof StringElement) {
                         ((StringElement) element).setVAlign(finalButton * 0.5F);
                     }
@@ -263,12 +263,12 @@ public class AdvancedBookScreen extends Screen {
         }).bounds(this.width / 2 + 2, 196, 98, 20).build());
 
         this.copyButton = this.addRenderableWidget(new ImageButton(this.width / 2 - 170, 8, 20, 20, 56, 182, 20, BOOK_LOCATION, 512, 256, (idk) -> {
-            this.clipboard = getCurrentPage().get(this.selectedElement);
+            this.clipboard = this.getCurrentElement();
             this.pasteButton.active = true;
         }));
         this.copyButton.setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.copy")));
         this.cutButton = this.addRenderableWidget(new ImageButton(this.width / 2 - 145, 8, 20, 20, 76, 182, 20, BOOK_LOCATION, 512, 256, (idk) -> {
-            this.clipboard = getCurrentPage().get(this.selectedElement);
+            this.clipboard = this.getCurrentElement();
             getCurrentPage().remove(this.selectedElement);
             changeSelectedElement(-1);
             this.pasteButton.active = true;
@@ -292,14 +292,17 @@ public class AdvancedBookScreen extends Screen {
         this.addElementButtons = new ArrayList<>();
         this.addElementButtons.add(createElementButton(Component.translatable("gui.advancedbook.rectangleElement"), dropdownX, dropdownY, 492, 40, (idk) -> {
             getCurrentPage().add(new RectangleElement(0, 0, 100, 50, Color.HSBtoRGB(this.hueSlider.getValue(), this.sbSliders.getSaturation(), this.sbSliders.getBrightness())));
+            changeSelectedElement(this.getCurrentPage().size() - 1);
         }));
         dropdownY += 20;
         this.addElementButtons.add(createElementButton(Component.translatable("gui.advancedbook.stringElement"), dropdownX, dropdownY, 492, 60, (idk) -> {
             getCurrentPage().add(new StringElement(0, 0, 60, 20, Color.HSBtoRGB(this.hueSlider.getValue(), this.sbSliders.getSaturation(), this.sbSliders.getBrightness()), Component.translatable("gui.advancedbook.defaultText")));
+            changeSelectedElement(this.getCurrentPage().size() - 1);
         }));
         dropdownY += 20;
         this.addElementButtons.add(createElementButton(Component.translatable("gui.advancedbook.itemElement"), dropdownX, dropdownY, 492, 80, (idk) -> {
             getCurrentPage().add(new ItemElement(0, 0, 32, 32, "minecraft:iron_ingot"));
+            changeSelectedElement(this.getCurrentPage().size() - 1);
         }));
         this.addPageButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.advancedbook.addPage"), (idk) -> {
             this.itemstack.getOrCreateTag().getList("pages", ListTag.TAG_LIST).add(this.currentPage + 1, new ListTag());
@@ -344,6 +347,9 @@ public class AdvancedBookScreen extends Screen {
 
     private List<BookElement> getCurrentPage() {
         return this.pages.get(this.currentPage);
+    }
+    private BookElement getCurrentElement() {
+        return this.getCurrentPage().get(this.selectedElement);
     }
 
     private void changeAddElementsVisibility(boolean visible) {
@@ -555,7 +561,7 @@ public class AdvancedBookScreen extends Screen {
         RenderSystem.enableBlend();
 //        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         if (selectedElement > -1) {
-            pages.get(this.currentPage).get(selectedElement).renderSelection(guiGraphics, i + 7, 8);
+            this.getCurrentElement().renderSelection(guiGraphics, i + 7, 8);
         } else if (selectedElement < -1) {
             guiGraphics.blitNineSlicedSized(BOOK_LOCATION, this.width / 2 + 50, this.bookmarks.get(-2 - selectedElement).position * 15 + 8, 35, 15, 8, 8, 32, 32, 0, 218, 512, 256);
         }
@@ -587,6 +593,43 @@ public class AdvancedBookScreen extends Screen {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean keyPressed(int key, int p_96553_, int modifiers) {
+        if (super.keyPressed(key, p_96553_, modifiers)) {
+            return true;
+        }
+        if (this.selectedElement <= -1) {
+            return false;
+        }
+        AdvancedBook.LOGGER.debug("Key: {}|{}|{}", key, p_96553_, modifiers);
+        boolean ctrl = (modifiers & 0b10) == 0b10;
+        int step = ctrl ? 5 : 1;
+        switch (key) {
+            case 262: // RIGHT
+                this.getCurrentElement().x += step;
+                break;
+            case 263: // LEFT
+                this.getCurrentElement().x -= step;
+                break;
+            case 264: // DOWN
+                this.getCurrentElement().y += step;
+                break;
+            case 265: // UP
+                this.getCurrentElement().y -= step;
+                break;
+        }
+        this.setFocused(null);
+        return true;
+    }
+
+    @Override
+    public boolean keyReleased(int key, int p_94716_, int p_94717_) {
+        if (super.keyReleased(key, p_94716_, p_94717_)) {
+            return true;
+        }
+        return true;
     }
 
     @Override
@@ -674,7 +717,7 @@ public class AdvancedBookScreen extends Screen {
         if (selectedElement <= -1) {
             return false;
         }
-        BookElement element = pages.get(this.currentPage).get(selectedElement);
+        BookElement element = this.getCurrentElement();
         int xOffset = i + 7;
         int yOffset = 8;
         if (!isDragging) {
