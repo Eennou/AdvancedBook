@@ -24,20 +24,24 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 // Sorry for that code, I promise, I can do better! But... I'm tired
 
 @OnlyIn(Dist.CLIENT)
 public class AdvancedBookScreen extends Screen {
     public static final ResourceLocation BOOK_LOCATION = new ResourceLocation(AdvancedBook.MODID, "textures/gui/book.png");
+    public static final ResourceLocation ITEM_SEARCH = new ResourceLocation(AdvancedBook.MODID,"textures/gui/item_search.png");
     protected int currentPage;
     protected int pagesCount;
     protected Map<Integer, List<BookElement>> pages;
@@ -73,6 +77,9 @@ public class AdvancedBookScreen extends Screen {
     private Button cancelSignButton;
     private EditBox titleEditBox;
     private List<Bookmark> bookmarks;
+    private EditBox searchBox;
+    private boolean showItemSearch;
+    private Button openSearchButton;
 
     public AdvancedBookScreen(ItemStack itemstack) {
         super(GameNarrator.NO_TITLE);
@@ -81,6 +88,8 @@ public class AdvancedBookScreen extends Screen {
         this.signed = this.itemstack.getOrCreateTag().contains("author");
         this.isSigning = false;
         this.playTurnSound = true;
+        this.showItemSearch = false;
+        this.searchResults = getItems("");
     }
 
     protected void init() {
@@ -91,6 +100,9 @@ public class AdvancedBookScreen extends Screen {
         this.titleEditBox.setMaxLength(32);
         this.createMenuControls();
         this.createElementEditControls();
+        this.searchBox = this.addWidget(new EditBox(this.font, this.editBoxElement.getX() - 195 - 5 + 82, this.editBoxElement.getY() - 66 + 10 + 6, 80, 9, Component.translatable("itemGroup.search")));
+        this.searchBox.setBordered(false);
+        this.searchBox.setResponder((search) -> this.searchResults = getItems(search));
         if (!this.itemstack.getOrCreateTag().contains("pages")) {
             ListTag tag = new ListTag();
             tag.add(new ListTag());
@@ -170,8 +182,12 @@ public class AdvancedBookScreen extends Screen {
         }));
         this.elementDeleteButton.setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.elementDelete")));
 
-        this.editBoxElement = this.addRenderableWidget(new EditBox(this.font, i + 186 + 1, 115, 123, 20, Component.literal("Text")));
+        this.editBoxElement = this.addRenderableWidget(new EditBox(this.font, i + 186 + 1, 116, 123, 18, Component.literal("Text")));
         this.editBoxElement.setMaxLength(320);
+        this.openSearchButton = this.addRenderableWidget(new ImageButton(i + 186 + 125, 115, 20, 20, 492, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            this.showItemSearch ^= true;
+            updateItemSearch();
+        }));
 
         this.alignElementButtons = new ArrayList<>();
         for (int button = 0; button < 3; button++) {
@@ -380,6 +396,45 @@ public class AdvancedBookScreen extends Screen {
         }, this.playTurnSound));
         this.updateButtonVisibility();
     }
+    private List<Item> searchResults;
+
+    private List<Item> getItems(String search) {
+        final String searchLS = search.toLowerCase().strip();
+        return ForgeRegistries.ITEMS.getValues().stream().filter(
+            item -> item.getDefaultInstance().getHoverName().getString().contains(searchLS)
+            || Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)).toString().contains(searchLS)
+        ).sorted(Comparator.comparing(a -> a.getDefaultInstance().getHoverName().getString())).sorted(Comparator.comparingInt(a -> {
+            int x = a.getDefaultInstance().getHoverName().getString().toLowerCase().indexOf(searchLS);
+            return (x != -1) ? x : 99;
+        })).toList();
+    }
+    protected void renderItemSearch(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (!this.showItemSearch)
+            return;
+        guiGraphics.blit(ITEM_SEARCH, this.editBoxElement.getX() - 195 - 5, this.editBoxElement.getY() - 66 + 10, 0, 0, 202, 132);
+        this.searchBox.render(guiGraphics, mouseX, mouseY, partialTick);
+        int i = 0;
+        int startX = this.editBoxElement.getX() - 195 - 5 + 9;
+        int startY = this.editBoxElement.getY() - 66 + 10 + 18;
+        for (Item item : this.searchResults) {
+            int x = startX + i % 10 * 18;
+            int y = startY + i / 10 * 18;
+            guiGraphics.renderFakeItem(item.getDefaultInstance(), x, y);
+            if (x <= mouseX && mouseX < x + 18 && y <= mouseY && mouseY < y + 18) {
+                guiGraphics.pose().pushPose();
+                guiGraphics.pose().translate(0, 0, 200);
+                guiGraphics.fill(x, y, x + 18, y + 18, 0x55FFFFFF);
+                guiGraphics.pose().popPose();
+                guiGraphics.renderTooltip(this.font, item.getDefaultInstance().getHoverName(), mouseX, mouseY);
+            }
+            i++;
+            if (i >= 60)
+                break;
+        }
+    }
+    private void updateItemSearch() {
+        this.searchBox.setVisible(this.showItemSearch);
+    }
 
     private void loadPage(int index) {
         if (!this.itemstack.hasTag()) {
@@ -468,6 +523,7 @@ public class AdvancedBookScreen extends Screen {
         this.copyButton.active = elementSelected;
         this.cutButton.active = elementSelected;
         this.editBoxElement.visible = elementSelected;
+        this.openSearchButton.visible = false;
         for (Button button : this.alignElementButtons) {
             button.visible = false;
         }
@@ -486,6 +542,7 @@ public class AdvancedBookScreen extends Screen {
                     ((ItemElement) element).setItem(text);
                 });
                 this.editBoxElement.setValue(((ItemElement) element).getItem());
+                this.openSearchButton.visible = true;
             } else {
                 this.editBoxElement.visible = false;
             }
@@ -572,6 +629,8 @@ public class AdvancedBookScreen extends Screen {
             this.isAddElementsChanged = false;
             changeAddElementsVisibility(this.isAddElementsOpened);
         }
+        guiGraphics.pose().translate(0, 0, 100);
+        this.renderItemSearch(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.pose().popPose();
     }
 
@@ -687,6 +746,26 @@ public class AdvancedBookScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int buttons) {
+        if (this.showItemSearch) {
+            if (this.openSearchButton.isHovered()) {
+                return true;
+            }
+            int startX = this.editBoxElement.getX() - 195 - 5;
+            int startY = this.editBoxElement.getY() - 66 + 10;
+            if (!(startX <= mouseX && mouseX < startX + 195 && startY <= mouseY && mouseY < startY + 132)) {
+                this.showItemSearch = false;
+            } else {
+                int gridStartX = this.editBoxElement.getX() - 195 - 5 + 9;
+                int gridStartY = this.editBoxElement.getY() - 66 + 10 + 18;
+                int selectedX = ((int)mouseX - gridStartX) / 18;
+                int selectedY = ((int)mouseY - gridStartY) / 18;
+                if (gridStartX <= mouseX && selectedX < 10 && gridStartY <= mouseY && selectedY < 6) {
+                    this.editBoxElement.setValue(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.searchResults.get(selectedY * 10 + selectedX))).toString());
+                    this.showItemSearch = false;
+                }
+            }
+            return true;
+        }
         if (super.mouseReleased(mouseX, mouseY, buttons)) {
             return true;
         }
