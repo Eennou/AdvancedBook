@@ -401,7 +401,7 @@ public class AdvancedBookScreen extends Screen {
     private List<Item> getItems(String search) {
         final String searchLS = search.toLowerCase().strip();
         return ForgeRegistries.ITEMS.getValues().stream().filter(
-            item -> item.getDefaultInstance().getHoverName().getString().contains(searchLS)
+            item -> item.getDefaultInstance().getHoverName().getString().toLowerCase().contains(searchLS)
             || Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)).toString().contains(searchLS)
         ).sorted(Comparator.comparing(a -> a.getDefaultInstance().getHoverName().getString())).sorted(Comparator.comparingInt(a -> {
             int x = a.getDefaultInstance().getHoverName().getString().toLowerCase().indexOf(searchLS);
