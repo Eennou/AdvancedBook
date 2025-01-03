@@ -1,6 +1,8 @@
 package com.eennou.advancedbook.screens.bookelements;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -36,15 +38,17 @@ public class ItemElement extends BookElement {
         return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.itemStack.getItem())).toString();
     }
 
+    protected final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+    public void render(PoseStack pose, int xOffset, int yOffset) {
         int minSide = Math.min(this.width, this.height);
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(minSide / 16F, minSide / 16F, 1);
-        guiGraphics.pose().translate(0, 0, -140);
-        guiGraphics.renderFakeItem(this.itemStack, ((xOffset + this.x + (this.width - minSide) / 2) * 16) / minSide, ((yOffset + this.y + (this.height - minSide) / 2) * 16) / minSide);
-        guiGraphics.pose().popPose();
+        pose.pushPose();
+        pose.scale(minSide / 16F, minSide / 16F, 1);
+        pose.translate(0, 0, -140);
+        itemRenderer.renderGuiItem(pose, this.itemStack, ((xOffset + this.x + (this.width - minSide) / 2) * 16) / minSide, ((yOffset + this.y + (this.height - minSide) / 2) * 16) / minSide);
+        pose.popPose();
     }
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeByte(3);

@@ -9,14 +9,16 @@ import com.eennou.advancedbook.screens.components.HueSlider;
 import com.eennou.advancedbook.screens.components.SBSliders;
 import com.eennou.advancedbook.utils.Bookmark;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.PageButton;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -34,7 +36,6 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Stream;
 
 // Sorry for that code, I promise, I can do better! But... I'm tired
 
@@ -408,24 +409,26 @@ public class AdvancedBookScreen extends Screen {
             return (x != -1) ? x : 99;
         })).toList();
     }
-    protected void renderItemSearch(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+    protected void renderItemSearch(PoseStack pose, int mouseX, int mouseY, float partialTick) {
         if (!this.showItemSearch)
             return;
-        guiGraphics.blit(ITEM_SEARCH, this.editBoxElement.getX() - 195 - 5, this.editBoxElement.getY() - 66 + 10, 0, 0, 202, 132);
-        this.searchBox.render(guiGraphics, mouseX, mouseY, partialTick);
+        RenderSystem.setShaderTexture(0, ITEM_SEARCH);
+        Gui.blit(pose, this.editBoxElement.getX() - 195 - 5, this.editBoxElement.getY() - 66 + 10, 0, 0, 202, 132);
+        this.searchBox.render(pose, mouseX, mouseY, partialTick);
         int i = 0;
         int startX = this.editBoxElement.getX() - 195 - 5 + 9;
         int startY = this.editBoxElement.getY() - 66 + 10 + 18;
         for (Item item : this.searchResults) {
             int x = startX + i % 10 * 18;
             int y = startY + i / 10 * 18;
-            guiGraphics.renderFakeItem(item.getDefaultInstance(), x, y);
+            itemRenderer.renderGuiItem(pose, item.getDefaultInstance(), x, y);
             if (x <= mouseX && mouseX < x + 18 && y <= mouseY && mouseY < y + 18) {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(0, 0, 200);
-                guiGraphics.fill(x, y, x + 18, y + 18, 0x55FFFFFF);
-                guiGraphics.pose().popPose();
-                guiGraphics.renderTooltip(this.font, item.getDefaultInstance().getHoverName(), mouseX, mouseY);
+                pose.pushPose();
+                pose.translate(0, 0, 200);
+                Gui.fill(pose, x, y, x + 18, y + 18, 0x55FFFFFF);
+                pose.popPose();
+                renderTooltip(pose, item.getDefaultInstance().getHoverName(), mouseX, mouseY);
             }
             i++;
             if (i >= 60)
@@ -555,11 +558,12 @@ public class AdvancedBookScreen extends Screen {
         this.selectedElement = index;
     }
 
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
+    public void render(PoseStack pose, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(pose);
         int i = (this.width - 148) / 2;
-        guiGraphics.blit(BOOK_LOCATION, i, 0, 0, 0, 148, 182, 512, 256);
-        guiGraphics.blit(BOOK_LOCATION, i, 0, 148, 0, 148, 182, 512, 256);
+        RenderSystem.setShaderTexture(0, BOOK_LOCATION);
+        Gui.blit(pose, i, 0, 0, 0, 148, 182, 512, 256);
+        Gui.blit(pose, i, 0, 148, 0, 148, 182, 512, 256);
 //        guiGraphics.enableScissor(i, 0, 148, 182);
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         Minecraft.getInstance().getMainRenderTarget().enableStencil();
@@ -569,22 +573,23 @@ public class AdvancedBookScreen extends Screen {
         RenderSystem.clearStencil(0);
         RenderSystem.stencilOp(GL11.GL_REPLACE, GL11.GL_REPLACE, GL11.GL_REPLACE);
         GL11.glColorMask(false, false, false, false);
-        guiGraphics.blit(BOOK_LOCATION, i, 0, 148 * 2, 0, 148, 182, 512, 256);
+        Gui.blit(pose, i, 0, 148 * 2, 0, 148, 182, 512, 256);
 
         RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 0, 0xFF);
         RenderSystem.stencilMask(0x00);
         GL11.glColorMask(true, true, true, true);
-        guiGraphics.pose().pushPose();
+        pose.pushPose();
         if (!isSigning) {
             for (BookElement element : pages.get(this.currentPage)) {
-                guiGraphics.pose().translate(0, 0, 50);
-                element.render(guiGraphics, i + 7, 8);
+                pose.translate(0, 0, 50);
+                element.render(pose, i + 7, 8);
             }
         }
-        guiGraphics.pose().translate(0, 0, 100);
+        pose.translate(0, 0, 100);
         GL11.glDisable(GL11.GL_STENCIL_TEST);
         RenderSystem.enableBlend();
-        guiGraphics.blit(BOOK_LOCATION, i, 0, 148 * 2, 0, 148, 182, 512, 256);
+        RenderSystem.setShaderTexture(0, BOOK_LOCATION);
+        blit(pose, i, 0, 148 * 2, 0, 148, 182, 512, 256);
         RenderSystem.disableBlend();
         GL11.glEnable(GL11.GL_STENCIL_TEST);
 
@@ -593,7 +598,7 @@ public class AdvancedBookScreen extends Screen {
         RenderSystem.clearStencil(0);
         GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
         GL11.glColorMask(false, false, false, false);
-        guiGraphics.blit(BOOK_LOCATION, i + 125, 0, 444, 0, 12, 182, 512, 256);
+        Gui.blit(pose, i + 125, 0, 444, 0, 12, 182, 512, 256);
         RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
         RenderSystem.stencilMask(0x00);
         GL11.glColorMask(true, true, true, true);
@@ -602,42 +607,48 @@ public class AdvancedBookScreen extends Screen {
             if (bookmark.page == this.currentPage && !this.isSigning) {
                 currentBookmark = bookmark;
             } else {
-                this.renderBookmark(guiGraphics, bookmark.position, FastColor.ARGB32.red(bookmark.color) / 255.0F, FastColor.ARGB32.green(bookmark.color) / 255.0F, FastColor.ARGB32.blue(bookmark.color) / 255.0F, false);
+                this.renderBookmark(pose, bookmark.position, FastColor.ARGB32.red(bookmark.color) / 255.0F, FastColor.ARGB32.green(bookmark.color) / 255.0F, FastColor.ARGB32.blue(bookmark.color) / 255.0F, false);
             }
         }
         GL11.glDisable(GL11.GL_STENCIL_TEST);
         if (currentBookmark != null) {
-            this.renderBookmark(guiGraphics, currentBookmark.position, FastColor.ARGB32.red(currentBookmark.color) / 255.0F, FastColor.ARGB32.green(currentBookmark.color) / 255.0F, FastColor.ARGB32.blue(currentBookmark.color) / 255.0F, true);
+            this.renderBookmark(pose, currentBookmark.position, FastColor.ARGB32.red(currentBookmark.color) / 255.0F, FastColor.ARGB32.green(currentBookmark.color) / 255.0F, FastColor.ARGB32.blue(currentBookmark.color) / 255.0F, true);
         }
         if (this.isSigning) {
             Component title = Component.translatable("book.editTitle");
-            guiGraphics.drawString(this.font, title, (this.width - this.font.width(title)) / 2, 50, 0xFF111111, false);
+            this.font.draw(pose, title.getString(), (this.width - this.font.width(title)) / 2, 50, 0xFF111111);
             Component text = Component.translatable("book.byAuthor", Minecraft.getInstance().player.getName().getString());
-            guiGraphics.drawString(this.font, text, (this.width - this.font.width(text)) / 2, 100, 0xFF111111, false);
+            this.font.draw(pose, text.getString(), (this.width - this.font.width(text)) / 2, 100, 0xFF111111);
         }
         RenderSystem.enableBlend();
 //        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         if (selectedElement > -1) {
-            this.getCurrentElement().renderSelection(guiGraphics, i + 7, 8);
+            this.getCurrentElement().renderSelection(pose, i + 7, 8);
         } else if (selectedElement < -1) {
-            guiGraphics.blitNineSlicedSized(BOOK_LOCATION, this.width / 2 + 50, this.bookmarks.get(-2 - selectedElement).position * 15 + 8, 35, 15, 8, 8, 32, 32, 0, 218, 512, 256);
+            RenderSystem.setShaderTexture(0, BOOK_LOCATION);
+            pose.pushPose();
+            pose.translate(-this.width / 2 - 50, 0, 0);
+            pose.scale(2, 1, 1);
+            Gui.blitNineSliced(pose, this.width / 2 + 50, this.bookmarks.get(-2 - selectedElement).position * 15 + 8, 35 / 2, 15, 8 / 2, 8, 32 / 2, 32, 0, 218);
+            pose.popPose();
         }
         RenderSystem.disableBlend();
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        super.render(pose, mouseX, mouseY, partialTick);
         RenderSystem.defaultBlendFunc();
         if (this.isAddElementsChanged) {
             this.isAddElementsChanged = false;
             changeAddElementsVisibility(this.isAddElementsOpened);
         }
-        guiGraphics.pose().translate(0, 0, 100);
-        this.renderItemSearch(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.pose().popPose();
+        pose.translate(0, 0, 100);
+        this.renderItemSearch(pose, mouseX, mouseY, partialTick);
+        pose.popPose();
     }
 
-    private void renderBookmark(GuiGraphics guiGraphics, int y, float red, float green, float blue, boolean isSelected) {
-        guiGraphics.setColor(red * 0.7F + 0.2F, green * 0.7F + 0.2F, blue * 0.7F + 0.2F, 1.0F);
-        guiGraphics.blit(BOOK_LOCATION, this.width / 2 + 50, 8 + y * 15, 460, isSelected ? 0 : 16, 34, 16, 512, 256);
-        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+    private void renderBookmark(PoseStack pose, int y, float red, float green, float blue, boolean isSelected) {
+        RenderSystem.setShaderTexture(0, BOOK_LOCATION);
+        RenderSystem.setShaderColor(red * 0.7F + 0.2F, green * 0.7F + 0.2F, blue * 0.7F + 0.2F, 1.0F);
+        Gui.blit(pose, this.width / 2 + 50, 8 + y * 15, 460, isSelected ? 0 : 16, 34, 16, 512, 256);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     private int mouseDragOffsetX = 0;

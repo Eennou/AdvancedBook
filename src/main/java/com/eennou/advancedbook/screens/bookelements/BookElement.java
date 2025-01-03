@@ -1,7 +1,9 @@
 package com.eennou.advancedbook.screens.bookelements;
 
 import com.eennou.advancedbook.screens.AdvancedBookScreen;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
@@ -40,11 +42,16 @@ public abstract class BookElement implements Cloneable {
         return tag;
     }
     @OnlyIn(Dist.CLIENT)
-    public abstract void render(GuiGraphics guiGraphics, int xOffset, int yOffset);
+    public abstract void render(PoseStack pose, int xOffset, int yOffset);
     @OnlyIn(Dist.CLIENT)
-    public void renderSelection(GuiGraphics guiGraphics, int xOffset, int yOffset) {
-        guiGraphics.blit(AdvancedBookScreen.BOOK_LOCATION, x + xOffset - 23, y + yOffset + height + 2, 56, 242, 21, 14, 512, 256);
-        guiGraphics.blitNineSlicedSized(AdvancedBookScreen.BOOK_LOCATION, x + xOffset - 1, y + yOffset - 1, width + 2, height + 2, 8, 8, 32, 32, 0, 218, 512, 256);
+    public void renderSelection(PoseStack pose, int xOffset, int yOffset) {
+        RenderSystem.setShaderTexture(0, AdvancedBookScreen.BOOK_LOCATION);
+        Gui.blit(pose, x + xOffset - 23, y + yOffset + height + 2, 56, 242, 21, 14, 512, 256);
+        pose.pushPose();
+        pose.translate(-x - xOffset + 1, 0, 0);
+        pose.scale(2, 1, 1);
+        Gui.blitNineSliced(pose, x + xOffset - 1, y + yOffset - 1, (width + 2) / 2, height + 2, 8 / 2, 8, 32 / 2, 32, 0, 218);
+        pose.popPose();
     }
 
     public boolean isIntersected(double mouseX, double mouseY, int xOffset, int yOffset) {

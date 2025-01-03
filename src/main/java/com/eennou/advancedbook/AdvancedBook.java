@@ -10,8 +10,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,15 +39,6 @@ public class AdvancedBook
     public static final String MODID = "advancedbook";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-
-    public static final RegistryObject<CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register("advancedbook", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.advancedbook"))
-            .icon(() -> ModItems.PAINT.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(ModItems.BOOK.get());
-                output.accept(ModItems.PAINT.get());
-            }).build());
 
     public AdvancedBook()
     {
@@ -55,7 +48,6 @@ public class AdvancedBook
 
         ModItems.register(modEventBus);
         ModRecipes.register(modEventBus);
-        CREATIVE_MODE_TABS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -93,6 +85,21 @@ public class AdvancedBook
     private void commonSetup(final FMLCommonSetupEvent event)
     {
 
+    }
+    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class CommonModEvents {
+        public static CreativeModeTab tab;
+
+        @SubscribeEvent
+        public static void regTab(CreativeModeTabEvent.Register e){
+            tab = e.registerCreativeModeTab(new ResourceLocation(MODID, "advancedbook"),
+                builder -> builder.title(Component.translatable("itemGroup.advancedbook"))
+                    .icon(() -> ModItems.PAINT.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
+                        output.accept(ModItems.BOOK.get());
+                        output.accept(ModItems.PAINT.get());
+                    }).build());
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

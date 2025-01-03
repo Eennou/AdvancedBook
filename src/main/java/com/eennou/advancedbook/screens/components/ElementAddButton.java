@@ -1,7 +1,9 @@
 package com.eennou.advancedbook.screens.components;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -58,11 +60,12 @@ public class ElementAddButton extends ImageButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int p_281473_, int p_283021_, float p_282518_) {
-        super.renderWidget(guiGraphics, p_281473_, p_283021_, p_282518_);
-        guiGraphics.pose().pushPose();
-        guiGraphics.drawCenteredString(this.font, this.text, this.getX() + 20 + (this.width - 20) / 2, this.getY() + 6, 0xFFFFFF);
-        guiGraphics.blit(this.resourceLocation, this.getX(), this.getY(), this.iconX, this.iconY, this.iconWidth, this.iconHeight, 512, 256);
-        guiGraphics.pose().popPose();
+    public void renderWidget(PoseStack pose, int p_281473_, int p_283021_, float p_282518_) {
+        super.renderWidget(pose, p_281473_, p_283021_, p_282518_);
+        pose.pushPose();
+        Gui.drawCenteredString(pose, this.font, this.text, this.getX() + 20 + (this.width - 20) / 2, this.getY() + 6, 0xFFFFFF);
+        RenderSystem.setShaderTexture(0, this.resourceLocation);
+        Gui.blit(pose, this.getX(), this.getY(), this.iconX, this.iconY, this.iconWidth, this.iconHeight, 512, 256);
+        pose.popPose();
     }
 }

@@ -1,7 +1,8 @@
 package com.eennou.advancedbook.screens.components;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -44,9 +45,9 @@ public class DropRightButton extends ImageButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int p_281473_, int p_283021_, float p_282518_) {
-        super.renderWidget(guiGraphics, p_281473_, p_283021_, p_282518_);
-        guiGraphics.drawCenteredString(this.font, this.text, this.getX() + (this.width - 9) / 2, this.getY() + 6, 0xFFFFFF);
+    public void renderWidget(PoseStack pose, int p_281473_, int p_283021_, float p_282518_) {
+        super.renderWidget(pose, p_281473_, p_283021_, p_282518_);
+        Gui.drawCenteredString(pose, this.font, this.text, this.getX() + (this.width - 9) / 2, this.getY() + 6, 0xFFFFFF);
     }
     @OnlyIn(Dist.CLIENT)
     public interface OnChanged {

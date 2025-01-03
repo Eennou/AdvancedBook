@@ -1,8 +1,9 @@
 package com.eennou.advancedbook.screens.bookelements;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -77,12 +78,12 @@ public class StringElement extends BookElement implements ColorableBookElement {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+    public void render(PoseStack pose, int xOffset, int yOffset) {
         Font font = Minecraft.getInstance().font;
         List<FormattedCharSequence> lines = font.split(this.text, this.width + 1);
         int maxWidth = lines.stream().map((x) -> font.width(x)).max(Comparator.naturalOrder()).orElse(10);
         for (FormattedCharSequence line : lines) {
-            guiGraphics.drawString(font, line, (int)(x + xOffset + (this.width - font.width(line)) * this.hAlign), (int)(y + yOffset + (this.height - font.lineHeight * lines.size()) * this.vAlign), color, false);
+            font.draw(pose, line, (int)(x + xOffset + (this.width - font.width(line)) * this.hAlign), (int)(y + yOffset + (this.height - font.lineHeight * lines.size()) * this.vAlign), color);
             yOffset += font.lineHeight;
         }
     }

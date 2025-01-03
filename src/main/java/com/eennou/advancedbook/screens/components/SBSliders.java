@@ -1,11 +1,12 @@
 package com.eennou.advancedbook.screens.components;
 
 import com.eennou.advancedbook.screens.AdvancedBookScreen;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -46,11 +47,18 @@ public class SBSliders extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int p_268034_, int p_268009_, float p_268085_) {
-        guiGraphics.blitNineSlicedSized(AdvancedBookScreen.BOOK_LOCATION, this.getX(), this.getY(), 77, 77, 4, 4, 9, 9, 32, 224, 512, 256);
+    public void renderWidget(PoseStack pose, int p_268034_, int p_268009_, float p_268085_) {
+        RenderSystem.setShaderTexture(0, AdvancedBookScreen.BOOK_LOCATION);
+        pose.pushPose();
+        pose.translate(-this.getX() * 0.9742F, 0, 0);
+        pose.scale(2 * 0.9871F, 1, 1);
+        Gui.blitNineSliced(pose, this.getX(), this.getY(), 78 / 2, 77, 4 / 2, 4, 10 / 2, 10, 32 / 2, 224);
+        pose.popPose();
 
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        VertexConsumer vertexconsumer = guiGraphics.bufferSource().getBuffer(RenderType.gui());
+        Matrix4f matrix4f = pose.last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         for (int x = 0; x < this.getWidth() - 4; x++) {
             float r = ((this.color >> 16) & 0xFF) / 255F;
             float g = ((this.color >> 8) & 0xFF) / 255F;
@@ -58,14 +66,15 @@ public class SBSliders extends AbstractWidget {
             r = lerp(1, r, (float) x / (this.getWidth() - 4));
             g = lerp(1, g, (float) x / (this.getWidth() - 4));
             b = lerp(1, b, (float) x / (this.getWidth() - 4));
-            vertexconsumer.vertex(matrix4f, (float) this.getX() + x + 2, (float) this.getY() + 2, (float) 0).color(r, g, b, 1F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) this.getX() + x + 2, (float) this.getY() + 2 + this.getHeight() - 4, (float) 0).color(0, 0, 0, 1F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) this.getX() + x + 2 + 1, (float) this.getY() + 2 + this.getHeight() - 4, (float) 0).color(0, 0, 0, 1F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) this.getX() + x + 2 + 1, (float) this.getY() + 2, (float) 0).color(r, g, b, 1F).endVertex();
+            bufferbuilder.vertex(matrix4f, (float) this.getX() + x + 2, (float) this.getY() + 2, (float) 0).color(r, g, b, 1F).endVertex();
+            bufferbuilder.vertex(matrix4f, (float) this.getX() + x + 2, (float) this.getY() + 2 + this.getHeight() - 4, (float) 0).color(0, 0, 0, 1F).endVertex();
+            bufferbuilder.vertex(matrix4f, (float) this.getX() + x + 2 + 1, (float) this.getY() + 2 + this.getHeight() - 4, (float) 0).color(0, 0, 0, 1F).endVertex();
+            bufferbuilder.vertex(matrix4f, (float) this.getX() + x + 2 + 1, (float) this.getY() + 2, (float) 0).color(r, g, b, 1F).endVertex();
         }
-        guiGraphics.flush();
-
-        guiGraphics.blit(AdvancedBookScreen.BOOK_LOCATION, this.getX() + (int)(this.saturation * (this.getHeight() - 6)), this.getY() + (int)(this.brightness * (this.getHeight() - 6)), 32, 218, 6, 6, 512, 256);
+        BufferUploader.drawWithShader(bufferbuilder.end());
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, AdvancedBookScreen.BOOK_LOCATION);
+        Gui.blit(pose, this.getX() + (int)(this.saturation * (this.getHeight() - 6)), this.getY() + (int)(this.brightness * (this.getHeight() - 6)), 32, 218, 6, 6, 512, 256);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.eennou.advancedbook.screens.bookelements;
 
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,8 +30,8 @@ public class RectangleElement extends BookElement implements ColorableBookElemen
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(GuiGraphics guiGraphics, int xOffset, int yOffset) {
-        guiGraphics.fill(x + xOffset, y + yOffset, x + xOffset + width, y + yOffset + height, color);
+    public void render(PoseStack pose, int xOffset, int yOffset) {
+        Gui.fill(pose, x + xOffset, y + yOffset, x + xOffset + width, y + yOffset + height, color);
     }
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeByte(1);
