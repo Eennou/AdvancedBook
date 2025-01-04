@@ -110,7 +110,7 @@ public class AdvancedBookScreen extends Screen {
         }
         this.pagesCount = this.itemstack.getOrCreateTag().getList("pages", ListTag.TAG_LIST).size();
         this.pages = new HashMap<>();
-        this.currentPage = this.itemstack.getOrCreateTag().getInt("openedPage");
+        this.currentPage = Math.min(this.itemstack.getOrCreateTag().getInt("openedPage"), this.pagesCount - 1);
         loadPage(this.currentPage);
         updateOpenedPage(this.currentPage);
         loadBookmarks();
@@ -130,6 +130,10 @@ public class AdvancedBookScreen extends Screen {
     private void loadBookmarks() {
         for (Tag bookmarkTag : this.itemstack.getOrCreateTag().getList("bookmarks", Tag.TAG_COMPOUND)) {
             CompoundTag bookmarkCompound = (CompoundTag) bookmarkTag;
+            if (bookmarkCompound.getInt("page") >= this.pagesCount) {
+                this.removeBookmark(bookmarkCompound.getInt("page"));
+                continue;
+            }
             this.bookmarks.add(new Bookmark(bookmarkCompound.getInt("page"), bookmarkCompound.getInt("position"), bookmarkCompound.getInt("color")));
         }
     }
@@ -322,20 +326,40 @@ public class AdvancedBookScreen extends Screen {
         }));
         this.addPageButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.advancedbook.addPage"), (idk) -> {
             this.itemstack.getOrCreateTag().getList("pages", ListTag.TAG_LIST).add(this.currentPage + 1, new ListTag());
-            AdvancedBook.PacketHandler.sendToServer(new EditPagesBookC2SPacket(this.currentPage + 1, true));
+            this.pages.put(this.currentPage + 1, new ArrayList<>());
             this.pagesCount += 1;
+            AdvancedBook.PacketHandler.sendToServer(new EditPagesBookC2SPacket(this.currentPage + 1, true));
             this.loadPage(this.currentPage + 1);
+            this.reindexBookmarks(this.currentPage + 1, true);
+            this.saveBookmarks();
             this.updatePageAddButtons();
             this.updateButtonVisibility();
         }).bounds(this.width / 2 - 170, 58, 70, 20).build());
         this.deletePageButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.advancedbook.deletePage"), (idk) -> {
             this.itemstack.getOrCreateTag().getList("pages", ListTag.TAG_LIST).remove(this.currentPage);
-            AdvancedBook.PacketHandler.sendToServer(new EditPagesBookC2SPacket(this.currentPage, false));
-            this.loadPage(Math.min(this.currentPage, this.pagesCount - 1));
+            this.pages.remove(this.currentPage);
             this.pagesCount -= 1;
+            AdvancedBook.PacketHandler.sendToServer(new EditPagesBookC2SPacket(this.currentPage, false));
+            this.currentPage = Math.min(this.currentPage, this.pagesCount - 1);
+            this.loadPage(this.currentPage);
+            this.reindexBookmarks(this.currentPage + 1, false);
+            this.saveBookmarks();
             this.updatePageAddButtons();
             this.updateButtonVisibility();
         }).bounds(this.width / 2 - 170, 83, 70, 20).build());
+    }
+
+    private void reindexBookmarks(int fromPage, boolean action) {
+        for (int i = 0; i < this.bookmarks.size(); i++) {
+            Bookmark bookmark = this.bookmarks.get(i);
+            if (bookmark.page == fromPage && !action) {
+                this.bookmarks.remove(i);
+                continue;
+            }
+            if (bookmark.page >= fromPage) {
+                bookmark.page += action ? 1 : -1;
+            }
+        }
     }
 
     private void updatePageAddButtons() {
@@ -441,7 +465,7 @@ public class AdvancedBookScreen extends Screen {
             return;
         }
         if (this.pages.containsKey(index)) {
-            this.pages.get(index).clear();
+            return;
         } else {
             this.pages.put(index, new ArrayList<>());
         }
@@ -475,6 +499,8 @@ public class AdvancedBookScreen extends Screen {
         CompoundTag tag = this.itemstack.getOrCreateTag();
         tag.putInt("openedPage", index);
         AdvancedBook.PacketHandler.sendToServer(new ChangePageBookC2SPacket(this.currentPage));
+        changeSelectedElement(-1);
+        this.updateButtonVisibility();
     }
 
     private void closeBook() {
