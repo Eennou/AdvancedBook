@@ -1,4 +1,4 @@
-package com.eennou.advancedbook.screens.bookelements;
+package com.eennou.advancedbook.screens.components;
 
 import com.eennou.advancedbook.screens.AdvancedBookScreen;
 import com.mojang.blaze3d.systems.RenderSystem;

@@ -1,5 +1,7 @@
 package com.eennou.advancedbook;
 
+import com.eennou.advancedbook.blocks.IllustrationFrameRenderer;
+import com.eennou.advancedbook.blocks.ModBlocks;
 import com.eennou.advancedbook.items.ModItems;
 import com.eennou.advancedbook.items.ModRecipes;
 import com.eennou.advancedbook.networking.*;
@@ -11,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -44,6 +47,7 @@ public class AdvancedBook
             .icon(() -> ModItems.PAINT.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(ModItems.BOOK.get());
+                output.accept(ModItems.ILLUSTRATION.get());
                 output.accept(ModItems.PAINT.get());
             }).build());
 
@@ -53,6 +57,7 @@ public class AdvancedBook
 
         modEventBus.addListener(this::commonSetup);
 
+        ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
         ModRecipes.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
@@ -83,6 +88,11 @@ public class AdvancedBook
             .decoder(UpdateBookmarksC2SPacket::new)
             .encoder(UpdateBookmarksC2SPacket::toBytes)
             .consumerMainThread(UpdateBookmarksC2SPacket::handle)
+            .add();
+        PacketHandler.instance.messageBuilder(ChangeIllustrationSizeC2SPacket.class, PacketHandler.getAndAppendId(), NetworkDirection.PLAY_TO_SERVER)
+            .decoder(ChangeIllustrationSizeC2SPacket::new)
+            .encoder(ChangeIllustrationSizeC2SPacket::toBytes)
+            .consumerMainThread(ChangeIllustrationSizeC2SPacket::handle)
             .add();
 
 
@@ -136,6 +146,11 @@ public class AdvancedBook
             ItemProperties.register(ModItems.BOOK.get(), new ResourceLocation(MODID, "opened"),
                     (itemstack, world, entity, some_int) -> itemstack.getOrCreateTag().contains("openedPage") ? 1.0F : 0.0F
             );
+        }
+        @SubscribeEvent
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            LOGGER.debug("Fine");
+            event.registerBlockEntityRenderer(ModBlocks.ILLUSTRATION_FRAME_BE.get(), IllustrationFrameRenderer::new);
         }
     }
 }

@@ -18,5 +18,7 @@
   "gui.advancedbook.vAlign": "Vertical Alignment",
   "item.advancedbook.book": "Book",
   "item.advancedbook.paint": "Paint",
-  "itemGroup.advancedbook": "Advanced Book"
+  "itemGroup.advancedbook": "Advanced Book",
+  "item.advancedbook.illustration": "Illustration",
+  "gui.advancedbook.size": "Size: %1$sx%1$s"
 }

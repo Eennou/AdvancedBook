@@ -25,6 +25,9 @@ public class SignBookC2SPacket {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
             ItemStack itemStack = Objects.requireNonNull(context.getSender()).getMainHandItem();
+            if (itemStack.getItem() != ModItems.BOOK.get()) {
+                itemStack = Objects.requireNonNull(context.getSender()).getOffhandItem();
+            }
             if (itemStack.getItem() != ModItems.BOOK.get()) return;
             CompoundTag tag = itemStack.getOrCreateTag();
             if (tag.contains("author")) {

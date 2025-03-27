@@ -60,22 +60,36 @@ public class EditBookC2SPacket {
                 return;
             }
             ItemStack itemStack = Objects.requireNonNull(context.getSender()).getMainHandItem();
-            if (itemStack.getItem() != ModItems.BOOK.get()) return;
+            if (itemStack.getItem() != ModItems.BOOK.get() && itemStack.getItem() != ModItems.ILLUSTRATION.get()) {
+                itemStack = Objects.requireNonNull(context.getSender()).getOffhandItem();
+            }
+            if (itemStack.getItem() != ModItems.BOOK.get() && itemStack.getItem() != ModItems.ILLUSTRATION.get()) return;
             CompoundTag tag = itemStack.getOrCreateTag();
             if (tag.contains("author")) {
                 return;
             }
-            ListTag pagesTag = tag.getList("pages", ListTag.TAG_LIST);
+            ListTag pagesTag = null;
             ListTag pageTag = new ListTag();
+            boolean isBook = itemStack.getItem() == ModItems.BOOK.get();
+            if (isBook) {
+                pagesTag = tag.getList("pages", ListTag.TAG_LIST);
+            }
+            int i = 0;
             for (BookElement element : page) {
                 pageTag.add(element.toCompound());
+                i++;
+                if (i > 255) break;
             }
-            if (pagesTag.size() <= this.index) {
-                pagesTag.add(pageTag);
+            if (isBook) {
+                if (pagesTag.size() <= this.index) {
+                    pagesTag.add(pageTag);
+                } else {
+                    pagesTag.set(this.index, pageTag);
+                }
+                tag.put("pages", pagesTag);
             } else {
-                pagesTag.set(this.index, pageTag);
+                tag.put("elements", pageTag);
             }
-            tag.put("pages", pagesTag);
         });
         return true;
     }

@@ -1,8 +1,10 @@
 package com.eennou.advancedbook.screens.bookelements;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -80,12 +82,37 @@ public class StringElement extends BookElement implements ColorableBookElement {
     public void render(GuiGraphics guiGraphics, int xOffset, int yOffset) {
         Font font = Minecraft.getInstance().font;
         List<FormattedCharSequence> lines = font.split(this.text, this.width + 1);
-        int maxWidth = lines.stream().map((x) -> font.width(x)).max(Comparator.naturalOrder()).orElse(10);
+//        int maxWidth = lines.stream().map((x) -> font.width(x)).max(Comparator.naturalOrder()).orElse(10);
         for (FormattedCharSequence line : lines) {
             guiGraphics.drawString(font, line, (int)(x + xOffset + (this.width - font.width(line)) * this.hAlign), (int)(y + yOffset + (this.height - font.lineHeight * lines.size()) * this.vAlign), color, false);
             yOffset += font.lineHeight;
         }
     }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void renderInWorld(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+        poseStack.pushPose();
+        Font font = Minecraft.getInstance().font;
+        List<FormattedCharSequence> lines = font.split(this.text, this.width + 1);
+        for (FormattedCharSequence line : lines) {
+            font.drawInBatch(
+                line,
+                (int)(this.x + (this.width - font.width(line)) * this.hAlign),
+                (int)(this.y + (this.height - font.lineHeight * lines.size()) * this.vAlign),
+                this.color, // 0xCFCFCF
+                false,
+                poseStack.last().pose(),
+                bufferSource,
+                Font.DisplayMode.NORMAL,
+                0,
+                combinedLight
+            );
+            poseStack.translate(0, font.lineHeight, 0);
+        }
+        poseStack.popPose();
+    }
+
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeByte(2);
         super.toBytes(buf);

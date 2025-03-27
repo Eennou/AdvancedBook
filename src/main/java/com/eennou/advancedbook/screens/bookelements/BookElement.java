@@ -1,7 +1,9 @@
 package com.eennou.advancedbook.screens.bookelements;
 
 import com.eennou.advancedbook.screens.AdvancedBookScreen;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
@@ -42,15 +44,17 @@ public abstract class BookElement implements Cloneable {
     @OnlyIn(Dist.CLIENT)
     public abstract void render(GuiGraphics guiGraphics, int xOffset, int yOffset);
     @OnlyIn(Dist.CLIENT)
-    public void renderSelection(GuiGraphics guiGraphics, int xOffset, int yOffset) {
-        guiGraphics.blit(AdvancedBookScreen.BOOK_LOCATION, x + xOffset - 23, y + yOffset + height + 2, 56, 242, 21, 14, 512, 256);
-        guiGraphics.blitNineSlicedSized(AdvancedBookScreen.BOOK_LOCATION, x + xOffset - 1, y + yOffset - 1, width + 2, height + 2, 8, 8, 32, 32, 0, 218, 512, 256);
+    public abstract void renderInWorld(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay);
+    @OnlyIn(Dist.CLIENT)
+    public void renderSelection(GuiGraphics guiGraphics) {
+        guiGraphics.blit(AdvancedBookScreen.BOOK_LOCATION, x - 23, y + height + 2, 56, 242, 21, 14, 512, 256);
+        guiGraphics.blitNineSlicedSized(AdvancedBookScreen.BOOK_LOCATION, x - 1, y - 1, width + 2, height + 2, 8, 8, 32, 32, 0, 218, 512, 256);
     }
 
     public boolean isIntersected(double mouseX, double mouseY, int xOffset, int yOffset) {
         return x + xOffset - 2 <= mouseX && y + yOffset - 2 <= mouseY && x + xOffset + width + 2 > mouseX && y + yOffset + height + 2 > mouseY;
     }
-    public int getIntersectedCorner(double mouseX, double mouseY, int xOffset, int yOffset) { // TODO: fix that shit
+    public int getIntersectedCorner(double mouseX, double mouseY, int xOffset, int yOffset) {
         if (x + xOffset - 4 <= mouseX && y + yOffset - 4 <= mouseY && x + xOffset + 8 > mouseX && y + yOffset + 8 > mouseY) {
             return 0;
         } else if (x + width - 8 + xOffset <= mouseX && y + yOffset - 4 <= mouseY && x + xOffset + width + 4 > mouseX && y + yOffset + 8 > mouseY) {
