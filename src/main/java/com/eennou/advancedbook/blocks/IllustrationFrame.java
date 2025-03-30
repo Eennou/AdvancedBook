@@ -31,9 +31,12 @@ import java.util.Objects;
 public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock implements EntityBlock {
     public static final IntegerProperty DUST = IntegerProperty.create("dust", 0, 20);
     public static final IntegerProperty DUST_CLEAN = IntegerProperty.create("dust_clean", 0, 3);
+    public static final Property<Boolean> SOAKED = BooleanProperty.create("soaked");
+    public static final Property<Boolean> LAMINATED = BooleanProperty.create("laminated");
+
     public IllustrationFrame(Properties properties) {
         super(properties.noOcclusion().sound(SoundType.WOOD).randomTicks().destroyTime(3));
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FACE, AttachFace.WALL).setValue(DUST, 0).setValue(DUST_CLEAN, 0));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FACE, AttachFace.WALL).setValue(DUST, 0).setValue(DUST_CLEAN, 0).setValue(SOAKED, false).setValue(LAMINATED, false));
     }
 
     @Override
@@ -51,6 +54,12 @@ public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock im
 
     @Override
     public void randomTick(BlockState blockState, ServerLevel level, BlockPos blockPos, RandomSource randomSource) {
+        if (blockState.getValue(LAMINATED)) return;
+        if (level.isRaining() && level.canSeeSky(blockPos)) {
+            level.setBlockAndUpdate(blockPos, blockState
+                .setValue(SOAKED, true)
+            );
+        }
         if (Config.dustAccumulation) {
             if (((IllustrationFrameBlockEntity)level.getExistingBlockEntity(blockPos)).getBookElements() != null
                 && randomSource.nextIntBetweenInclusive(1, 100) <= Config.dustChance) {
@@ -68,7 +77,7 @@ public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock im
         IllustrationFrameBlockEntity blockEntity = (IllustrationFrameBlockEntity) level.getExistingBlockEntity(pos);
         if (blockEntity != null && blockEntity.getBookElements() != null) {
             if (player.isShiftKeyDown()) {
-                ItemStack itemStack = new ItemStack(ModItems.ILLUSTRATION.get(), 1);
+                ItemStack itemStack = new ItemStack(blockEntity.isSoaked() ? ModItems.SOAKED_ILLUSTRATION.get() : ModItems.ILLUSTRATION.get(), 1);
                 itemStack.setTag(blockEntity.getIllustration());
                 player.getInventory().add(itemStack);
                 blockEntity.clearIllustration();
@@ -118,6 +127,6 @@ public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock im
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, FACE, DUST, DUST_CLEAN);
+        builder.add(FACING, FACE, DUST, DUST_CLEAN, SOAKED, LAMINATED);
     }
 }

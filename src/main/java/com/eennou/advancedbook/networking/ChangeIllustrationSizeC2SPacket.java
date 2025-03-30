@@ -1,5 +1,6 @@
 package com.eennou.advancedbook.networking;
 
+import com.eennou.advancedbook.Config;
 import com.eennou.advancedbook.items.ModItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -37,7 +38,7 @@ public class ChangeIllustrationSizeC2SPacket {
             if (tag.contains("author")) {
                 return;
             }
-            if (this.width > 5 || this.height > 5){
+            if (this.width > Config.illustrationMaxSize || this.height > Config.illustrationMaxSize || this.width < 1 || this.height < 1){
                 return;
             }
             tag.putShort("width", this.width);

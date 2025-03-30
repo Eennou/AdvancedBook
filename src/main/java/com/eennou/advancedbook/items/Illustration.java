@@ -38,7 +38,7 @@ public class Illustration extends Item {
         BlockEntity blockEntity = level.getExistingBlockEntity(result.getBlockPos());
         if (result.getType() == HitResult.Type.BLOCK && blockEntity instanceof IllustrationFrameBlockEntity) {
             CompoundTag illustration = ((IllustrationFrameBlockEntity) blockEntity).getIllustration();
-            ((IllustrationFrameBlockEntity) blockEntity).setBookElements(itemstack.getOrCreateTag());
+            ((IllustrationFrameBlockEntity) blockEntity).setBookElements(itemstack.getOrCreateTag(), true);
             blockEntity.setChanged();
             itemstack.shrink(1);
             if (illustration != null) {
@@ -58,8 +58,8 @@ public class Illustration extends Item {
     public boolean overrideOtherStackedOnMe(ItemStack itemStack, ItemStack itemStack1, Slot slot, ClickAction action, Player player, SlotAccess slotAccess) {
         if (itemStack.getItem() == itemStack1.getItem()) {
             if (itemStack.getTag() != null && itemStack1.getTag() != null) {
-                if (itemStack1.getTag().getList("elements", Tag.TAG_LIST).isEmpty()
-                    && itemStack1.getTag().getList("elements", Tag.TAG_LIST).isEmpty()) {
+                if (itemStack1.getTag().getList("elements", Tag.TAG_COMPOUND).isEmpty()
+                    && itemStack1.getTag().getList("elements", Tag.TAG_COMPOUND).isEmpty() && itemStack.getTag().getShort("width") == itemStack1.getTag().getShort("width") && itemStack.getTag().getShort("height") == itemStack1.getTag().getShort("height")) {
                     int moveCount = action == ClickAction.PRIMARY ? itemStack1.getCount() : 1;
                     itemStack.grow(moveCount);
                     itemStack1.shrink(moveCount);
@@ -90,5 +90,6 @@ public class Illustration extends Item {
         }
         components.add(Component.translatable("book.byAuthor", itemstack.getTag().getString("author")).withStyle(ChatFormatting.GRAY));
         components.add(Component.translatable("book.generation." + itemstack.getTag().getInt("generation")).withStyle(ChatFormatting.GRAY));
+        components.add(Component.translatable("gui.advancedbook.laminated").withStyle(ChatFormatting.YELLOW));
     }
 }

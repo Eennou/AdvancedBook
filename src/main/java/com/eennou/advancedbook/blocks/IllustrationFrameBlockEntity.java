@@ -9,17 +9,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eennou.advancedbook.blocks.IllustrationFrame.DUST;
-import static com.eennou.advancedbook.blocks.IllustrationFrame.DUST_CLEAN;
+import static com.eennou.advancedbook.blocks.IllustrationFrame.*;
 import static net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock.FACE;
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 
@@ -30,7 +27,7 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
         }
         return this.bookElements;
     }
-    public void setBookElements(CompoundTag illustration) {
+    public void setBookElements(CompoundTag illustration, boolean placed) {
         this.illustration = illustration;
         this.bookElements = new ArrayList<>();
         for (Tag tag : illustration.getList("elements", Tag.TAG_COMPOUND)) {
@@ -49,6 +46,14 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
             case CEILING -> this.getBlockState().getValue(FACING).getOpposite();
         };
         this.slaves.clear();
+        if (placed) {
+            this.level.setBlockAndUpdate(this.getBlockPos(), this.getBlockState()
+                .setValue(DUST, 0)
+                .setValue(DUST_CLEAN, 0)
+                .setValue(SOAKED, false)
+                .setValue(LAMINATED, this.illustration.contains("author"))
+            );
+        }
         for (short x = 0; x < this.illustration.getShort("width"); x++) {
             BlockPos columnTop = this.worldPosition.relative(xDir, x);
             for (short y = 0; y < this.illustration.getShort("height"); y++) {
@@ -62,11 +67,33 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
                         ((IllustrationFrameBlockEntity) blockEntity).offsetX = x;
                         ((IllustrationFrameBlockEntity) blockEntity).offsetY = y;
                         this.slaves.add((IllustrationFrameBlockEntity) blockEntity);
+                        if (placed) {
+                            this.level.setBlockAndUpdate(blockEntity.getBlockPos(), blockEntity.getBlockState()
+                                .setValue(DUST, 0)
+                                .setValue(DUST_CLEAN, 0)
+                                .setValue(SOAKED, false)
+                                .setValue(LAMINATED, this.illustration.contains("author"))
+                            );
+                        }
                     }
                 }
             }
         }
     }
+
+    public boolean isSoaked() {
+        if (this.isSlave()) {
+            return this.getMaster().isSoaked();
+        } else {
+            for (IllustrationFrameBlockEntity slave : this.slaves) {
+                if (slave.getBlockState().getValue(SOAKED)) {
+                    return true;
+                }
+            }
+            return this.getBlockState().getValue(SOAKED);
+        }
+    }
+
     public void appendSlave(IllustrationFrameBlockEntity blockEntity) {
         blockEntity.setMaster(this);
         if (!this.slaves.contains(blockEntity)) {
@@ -161,7 +188,7 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
         if (tag.contains("illustration")) {
             this.illustration = tag.getCompound("illustration");
             if (this.level != null) {
-                this.setBookElements(this.illustration);
+                this.setBookElements(this.illustration, false);
             }
         } else if (this.level != null && tag.contains("inherited")) {
             this.offsetX = tag.getShort("offsetX");
@@ -180,7 +207,7 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
         super.onLoad();
         if (this.level.isClientSide()) return;
         if (this.illustration != null) {
-            this.setBookElements(this.illustration);
+            this.setBookElements(this.illustration, false);
         }
     }
 

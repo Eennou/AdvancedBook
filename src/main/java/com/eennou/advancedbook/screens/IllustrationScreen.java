@@ -3,8 +3,6 @@ package com.eennou.advancedbook.screens;
 import com.eennou.advancedbook.AdvancedBook;
 import com.eennou.advancedbook.Config;
 import com.eennou.advancedbook.networking.ChangeIllustrationSizeC2SPacket;
-import com.eennou.advancedbook.networking.EditBookC2SPacket;
-import com.eennou.advancedbook.screens.AbstractGraphicsScreen;
 import com.eennou.advancedbook.screens.bookelements.BookElement;
 import com.eennou.advancedbook.screens.bookelements.ItemElement;
 import com.eennou.advancedbook.screens.bookelements.RectangleElement;
@@ -13,9 +11,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -23,7 +19,6 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -59,7 +54,6 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
         this.graphicsHeight = 256 * this.illustrationHeight;
         this.graphicsX = (this.width - this.graphicsWidth / this.guiScale) / 2;
         this.graphicsY = 16;
-        super.init();
         int horCentralPos = this.graphicsX + (this.graphicsWidth / this.guiScale) / 2 + this.offsetX;
         int verCentralPos = this.graphicsY + (this.graphicsHeight / this.guiScale) / 2 + this.offsetY;
         this.widthDecButton = this.addRenderableWidget(new ImageButton(horCentralPos - 4 - 16, this.graphicsY + this.offsetY - 14, 8, 13, 496, 216, 13, BOOK_LOCATION, 512, 256, (idk) -> {
@@ -82,6 +76,11 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
             this.illustrationHeight++;
             this.rebuildWidgets();
         }));
+        super.init();
+        this.widthIncButton.visible = this.illustrationWidth < Config.illustrationMaxSize;
+        this.widthDecButton.visible = this.illustrationWidth > 1;
+        this.heightIncButton.visible = this.illustrationHeight < Config.illustrationMaxSize;
+        this.heightDecButton.visible = this.illustrationHeight > 1;
     }
 
     private void updatePositions() {
@@ -103,6 +102,15 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
             this.updateSigning(true);
         }).bounds(this.width / 2 - 100, this.height - 35, 200, 20).build());
         super.createMenuControls();
+    }
+
+    @Override
+    protected void updateSigning(boolean isSigning) {
+        super.updateSigning(isSigning);
+        this.widthIncButton.visible = this.illustrationWidth < Config.illustrationMaxSize && !isSigning;
+        this.widthDecButton.visible = this.illustrationWidth > 1 && !isSigning;
+        this.heightIncButton.visible = this.illustrationHeight < Config.illustrationMaxSize && !isSigning;
+        this.heightDecButton.visible = this.illustrationHeight > 1 && !isSigning;
     }
 
     @Override
@@ -171,12 +179,14 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.graphicsX, this.graphicsY, 0);
         guiGraphics.pose().translate(this.offsetX, this.offsetY, 0);
-        guiGraphics.blitNineSlicedSized(BOOK_LOCATION, -1, -10, this.graphicsWidth / this.guiScale + 2, 10, 3, 10, 10, 81, 246, 512, 256);
-        guiGraphics.blitNineSlicedSized(BOOK_LOCATION, -10, -1, 10, this.graphicsHeight / this.guiScale + 2, 3, 10, 10, 91, 246, 512, 256);
-        guiGraphics.blitNineSlicedSized(BOOK_LOCATION, this.graphicsWidth / this.guiScale / 2 - 8, -14, 16, 13, 4, 9, 9, 32, 224, 512, 256);
-        guiGraphics.blitNineSlicedSized(BOOK_LOCATION, -14, this.graphicsHeight / this.guiScale / 2 - 8, 13, 16, 4, 9, 9, 32, 224, 512, 256);
-        guiGraphics.drawString(this.font, String.valueOf(this.illustrationWidth), this.graphicsWidth / this.guiScale / 2 - this.font.width(String.valueOf(this.illustrationWidth)) / 2, -11, 0xFFFFFF, false);
-        guiGraphics.drawString(this.font, String.valueOf(this.illustrationHeight), -10, this.graphicsHeight / this.guiScale / 2 - this.font.width(String.valueOf(this.illustrationHeight)) / 2, 0xFFFFFF, false);
+        if (!isSigning) {
+            guiGraphics.blitNineSlicedSized(BOOK_LOCATION, -1, -10, this.graphicsWidth / this.guiScale + 2, 10, 3, 10, 10, 81, 246, 512, 256);
+            guiGraphics.blitNineSlicedSized(BOOK_LOCATION, -10, -1, 10, this.graphicsHeight / this.guiScale + 2, 3, 10, 10, 91, 246, 512, 256);
+            guiGraphics.blitNineSlicedSized(BOOK_LOCATION, this.graphicsWidth / this.guiScale / 2 - 8, -14, 16, 13, 4, 9, 9, 32, 224, 512, 256);
+            guiGraphics.blitNineSlicedSized(BOOK_LOCATION, -14, this.graphicsHeight / this.guiScale / 2 - 8, 13, 16, 4, 9, 9, 32, 224, 512, 256);
+            guiGraphics.drawString(this.font, String.valueOf(this.illustrationWidth), this.graphicsWidth / this.guiScale / 2 - this.font.width(String.valueOf(this.illustrationWidth)) / 2, -11, 0xFFFFFF, false);
+            guiGraphics.drawString(this.font, String.valueOf(this.illustrationHeight), -10, this.graphicsHeight / this.guiScale / 2 - this.font.width(String.valueOf(this.illustrationHeight)) / 2, 0xFFFFFF, false);
+        }
         guiGraphics.pose().scale(1F / this.guiScale, 1F / this.guiScale, 1F / this.guiScale);
 
         GL11.glEnable(GL11.GL_STENCIL_TEST);
@@ -234,7 +244,6 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
 
     @Override
     protected boolean mouseDraggedSpecial(double mouseX, double mouseY, int buttons) {
-//        AdvancedBook.LOGGER.debug("{}", buttons);
         if (buttons != 1) return false;
         if (!isDragging) {
             isDragging = true;

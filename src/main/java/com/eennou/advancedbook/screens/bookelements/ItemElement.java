@@ -1,6 +1,5 @@
 package com.eennou.advancedbook.screens.bookelements;
 
-import com.eennou.advancedbook.AdvancedBook;
 import com.eennou.advancedbook.blocks.IllustrationFrameRenderer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,7 +12,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Display;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +73,7 @@ public class ItemElement extends BookElement {
         poseStack.translate(0.5, -0.5, 0);
 //        GL11.glColorMask(false, false, false, false);
 //        float[] color = RenderSystem.getShaderColor();
-        ((MultiBufferSource.BufferSource)bufferSource).endBatch();
+        IllustrationFrameRenderer.fucking_shit.endBatch();
         Vector4f up = new Vector4f(0, 1, 0, 1);
         Vector4f zero = new Vector4f(0, 0, 0, 1);
         // hacky wacky way to fix odd lighting
@@ -89,7 +87,7 @@ public class ItemElement extends BookElement {
         Minecraft.getInstance().getItemRenderer().renderStatic(null, this.itemStack, ItemDisplayContext.GUI,
     false, poseStack, bufferSource, Minecraft.getInstance().level, combinedLight, OverlayTexture.NO_OVERLAY, 0
         );
-        ((MultiBufferSource.BufferSource)bufferSource).endBatch();
+        IllustrationFrameRenderer.fucking_shit.endBatch();
         poseStack.popPose();
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.solid());
         GL11.glColorMask(false, false, false, false);
@@ -97,7 +95,7 @@ public class ItemElement extends BookElement {
         RenderSystem.disablePolygonOffset();
         drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, IllustrationFrameRenderer.WHITE.sprite(), 0, 2, 2, 1.0F, 0.87F);
 
-        ((MultiBufferSource.BufferSource)bufferSource).endLastBatch();
+        IllustrationFrameRenderer.fucking_shit.endLastBatch();
         RenderSystem.enablePolygonOffset();
         GL11.glColorMask(true, true, true, true);
         RenderSystem.depthMask(false);

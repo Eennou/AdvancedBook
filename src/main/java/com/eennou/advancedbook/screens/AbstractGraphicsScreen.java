@@ -37,6 +37,8 @@ public abstract class AbstractGraphicsScreen extends Screen {
     protected Button addButton;
     protected List<ElementAddButton> addElementButtons;
     protected List<ImageButton> alignElementButtons;
+    private ImageButton fontScaleInc;
+    private ImageButton fontScaleDec;
     protected boolean isAddElementsOpened = false;
     protected boolean isAddElementsChanged = true;
     protected Button elementFGButton;
@@ -82,8 +84,8 @@ public abstract class AbstractGraphicsScreen extends Screen {
         this.createElementEditControls();
         this.titleEditBox = this.addRenderableWidget(new EditBox(this.font, this.width / 2 - 50, 70, 100, 20, Component.literal("")));
         this.titleEditBox.setMaxLength(32);
-        this.titleEditBox.setBordered(false);
-        this.titleEditBox.setTextColor(0x000000);
+//        this.titleEditBox.setBordered(false);
+//        this.titleEditBox.setTextColor(0x000000);
         this.searchBox = this.addWidget(new EditBox(this.font, this.editBoxElement.getX() - 195 - 5 + 82, this.editBoxElement.getY() - 66 + 10 + 6, 80, 9, Component.translatable("itemGroup.search")));
         this.searchBox.setBordered(false);
         this.searchBox.setResponder((search) -> this.searchResults = getItems(search));
@@ -179,6 +181,34 @@ public abstract class AbstractGraphicsScreen extends Screen {
             })));
             this.alignElementButtons.get(3 + button).setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.vAlign")));
         }
+        this.fontScaleInc = this.addRenderableWidget(new ImageButton(leftBound, 165, 20, 20, 456, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            if (this.selectedElement != -1) {
+                BookElement element = this.getCurrentElement();
+                if (element instanceof StringElement) {
+                    int scale = ((StringElement) element).getScale() + 1;
+                    this.fontScaleInc.active = scale < 40;
+                    this.fontScaleDec.active = scale > 1;
+                    if (scale > 40) {
+                        return;
+                    }
+                    ((StringElement) element).setScale(scale);
+                }
+            }
+        }));
+        this.fontScaleDec = this.addRenderableWidget(new ImageButton(leftBound + 20, 165, 20, 20, 436, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            if (this.selectedElement != -1) {
+                BookElement element = this.getCurrentElement();
+                if (element instanceof StringElement) {
+                    int scale = ((StringElement) element).getScale() - 1;
+                    this.fontScaleInc.active = scale < 40;
+                    this.fontScaleDec.active = scale > 1;
+                    if (scale < 1) {
+                        return;
+                    }
+                    ((StringElement) element).setScale(scale);
+                }
+            }
+        }));
     }
 
     protected abstract void specialColorChange();
@@ -343,6 +373,8 @@ public abstract class AbstractGraphicsScreen extends Screen {
         this.cutButton.active = elementSelected;
         this.editBoxElement.visible = elementSelected;
         this.openSearchButton.visible = false;
+        this.fontScaleInc.visible = false;
+        this.fontScaleDec.visible = false;
         for (Button button : this.alignElementButtons) {
             button.visible = false;
         }
@@ -356,6 +388,10 @@ public abstract class AbstractGraphicsScreen extends Screen {
                 for (Button button : this.alignElementButtons) {
                     button.visible = true;
                 }
+                this.fontScaleInc.visible = true;
+                this.fontScaleDec.visible = true;
+                this.fontScaleInc.active = ((StringElement) element).getScale() < 40;
+                this.fontScaleDec.active = ((StringElement) element).getScale() > 1;
             } else if (element instanceof ItemElement) {
                 this.editBoxElement.setResponder((text) -> {
                     ((ItemElement) element).setItem(text);
@@ -374,55 +410,6 @@ public abstract class AbstractGraphicsScreen extends Screen {
         this.selectedElement = index;
     }
 
-//    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-//        this.renderBackground(guiGraphics);
-//        int i = (this.width - 148) / 2;
-//        guiGraphics.blit(BOOK_LOCATION, i, 0, 0, 0, 148, 182, 512, 256);
-//        guiGraphics.blit(BOOK_LOCATION, i, 0, 148, 0, 148, 182, 512, 256);
-////        guiGraphics.enableScissor(i, 0, 148, 182);
-//        GL11.glEnable(GL11.GL_STENCIL_TEST);
-//        Minecraft.getInstance().getMainRenderTarget().enableStencil();
-////        GL11.glAlphaFunc(GL11.GL_GREATER, 0);
-//        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
-//        RenderSystem.stencilMask(0xFF);
-//        RenderSystem.clearStencil(0);
-//        RenderSystem.stencilOp(GL11.GL_REPLACE, GL11.GL_REPLACE, GL11.GL_REPLACE);
-//        GL11.glColorMask(false, false, false, false);
-//        guiGraphics.blit(BOOK_LOCATION, i, 0, 148 * 2, 0, 148, 182, 512, 256);
-//
-//        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 0, 0xFF);
-//        RenderSystem.stencilMask(0x00);
-//        GL11.glColorMask(true, true, true, true);
-//        guiGraphics.pose().pushPose();
-//        if (!isSigning) {
-//            renderBookElements(guiGraphics);
-//        }
-//        guiGraphics.pose().translate(0, 0, 100);
-//        GL11.glDisable(GL11.GL_STENCIL_TEST);
-//        RenderSystem.enableBlend();
-//        guiGraphics.blit(BOOK_LOCATION, i, 0, 148 * 2, 0, 148, 182, 512, 256);
-//        afterBookElementsRender(guiGraphics, i);
-//
-//        renderSelected(guiGraphics);
-//
-//        RenderSystem.disableBlend();
-//
-//        if (this.isSigning) {
-//            renderSigning(guiGraphics);
-//        }
-//
-//        this.renderWidgets(guiGraphics, mouseX, mouseY, partialTick);
-//        RenderSystem.defaultBlendFunc();
-//        if (this.isAddElementsChanged) {
-//            this.isAddElementsChanged = false;
-//            changeAddElementsVisibility(this.isAddElementsOpened);
-//        }
-//        guiGraphics.pose().translate(0, 0, 100);
-//        this.renderItemSearch(guiGraphics, mouseX, mouseY, partialTick);
-//        guiGraphics.pose().popPose();
-//    }
-
-
     public abstract void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick);
 
     protected void renderSelected(GuiGraphics guiGraphics) {
@@ -439,10 +426,10 @@ public abstract class AbstractGraphicsScreen extends Screen {
 
     protected void afterBookElementsRender(GuiGraphics guiGraphics) {
 
-    };
+    }
     protected void renderSelectedSpecial(GuiGraphics guiGraphics) {
 
-    };
+    }
 
     protected void renderSigning(GuiGraphics guiGraphics) {
         Component title = Component.translatable("book.editTitle");

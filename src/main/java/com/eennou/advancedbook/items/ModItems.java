@@ -16,6 +16,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> BOOK = ITEMS.register("book", () -> new Book(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON)));
     public static final RegistryObject<Item> ILLUSTRATION = ITEMS.register("illustration", () -> new Illustration(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON)));
+    public static final RegistryObject<Item> SOAKED_ILLUSTRATION = ITEMS.register("soaked_illustration", () -> new Item(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON)));
 //    public static final RegistryObject<Item> DOCUMENT = ITEMS.register("document", () -> new Book(new Item.Properties().stacksTo(8).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PAINT = ITEMS.register("paint", () -> new Item(new Item.Properties().stacksTo(64).rarity(Rarity.COMMON)));
     public static final RegistryObject<Item> ILLUSTRATION_FRAME = ITEMS.register("illustration_frame", () -> new BlockItem(ModBlocks.ILLUSTRATION_FRAME.get(), new Item.Properties().stacksTo(64).rarity(Rarity.COMMON)));

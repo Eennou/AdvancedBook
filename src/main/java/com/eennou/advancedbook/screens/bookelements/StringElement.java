@@ -18,6 +18,7 @@ import java.util.List;
 public class StringElement extends BookElement implements ColorableBookElement {
     protected int color;
     protected Component text;
+    protected int scale;
     protected float hAlign;
     protected float vAlign;
 
@@ -25,19 +26,22 @@ public class StringElement extends BookElement implements ColorableBookElement {
         super(x, y, width, height);
         this.color = color;
         this.text = text;
+        this.scale = 1;
         this.hAlign = 0;
         this.vAlign = 0;
     }
-    public StringElement(int x, int y, int width, int height, float hAlign, float vAlign, int color, Component text) {
+    public StringElement(int x, int y, int width, int height, int scale, float hAlign, float vAlign, int color, Component text) {
         this(x, y, width, height, color, text);
+        this.scale = Math.max(1, scale);
         this.hAlign = hAlign;
         this.vAlign = vAlign;
     }
     public StringElement(FriendlyByteBuf buf) {
-        this(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readFloat(), buf.readFloat(), buf.readInt(), Component.literal(buf.readUtf()));
+        this(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readFloat(), buf.readFloat(), buf.readInt(), Component.literal(buf.readUtf()));
     }
     public StringElement(CompoundTag tag) {
         super(tag);
+        this.scale = Math.max(1, tag.getInt("scale"));
         this.hAlign = tag.getFloat("hAlign");
         this.vAlign = tag.getFloat("vAlign");
         this.color = tag.getInt("color");
@@ -60,6 +64,9 @@ public class StringElement extends BookElement implements ColorableBookElement {
     public Component getText() {
         return this.text;
     }
+    public void setScale(int scale) {
+        this.scale = Math.max(1, scale);
+    }
 
     public void setHAlign(float hAlign) {
         this.hAlign = hAlign;
@@ -69,6 +76,9 @@ public class StringElement extends BookElement implements ColorableBookElement {
         this.vAlign = vAlign;
     }
 
+    public int getScale() {
+        return this.scale;
+    }
     public float getHAlign() {
         return this.hAlign;
     }
@@ -81,12 +91,15 @@ public class StringElement extends BookElement implements ColorableBookElement {
     @Override
     public void render(GuiGraphics guiGraphics, int xOffset, int yOffset) {
         Font font = Minecraft.getInstance().font;
-        List<FormattedCharSequence> lines = font.split(this.text, this.width + 1);
+        List<FormattedCharSequence> lines = font.split(this.text, (this.width + 1) / scale);
 //        int maxWidth = lines.stream().map((x) -> font.width(x)).max(Comparator.naturalOrder()).orElse(10);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().scale(scale, scale, scale);
         for (FormattedCharSequence line : lines) {
-            guiGraphics.drawString(font, line, (int)(x + xOffset + (this.width - font.width(line)) * this.hAlign), (int)(y + yOffset + (this.height - font.lineHeight * lines.size()) * this.vAlign), color, false);
-            yOffset += font.lineHeight;
+            guiGraphics.drawString(font, line, (int)(x + xOffset + (this.width - font.width(line) * scale) * this.hAlign) / scale, (int)(y + yOffset + (this.height - font.lineHeight * lines.size() * scale) * this.vAlign) / scale, color, false);
+            yOffset += font.lineHeight * scale;
         }
+        guiGraphics.pose().popPose();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -94,12 +107,13 @@ public class StringElement extends BookElement implements ColorableBookElement {
     public void renderInWorld(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         poseStack.pushPose();
         Font font = Minecraft.getInstance().font;
-        List<FormattedCharSequence> lines = font.split(this.text, this.width + 1);
+        List<FormattedCharSequence> lines = font.split(this.text, (this.width + 1) / scale);
+        poseStack.scale(scale, scale, scale);
         for (FormattedCharSequence line : lines) {
             font.drawInBatch(
                 line,
-                (int)(this.x + (this.width - font.width(line)) * this.hAlign),
-                (int)(this.y + (this.height - font.lineHeight * lines.size()) * this.vAlign),
+                ((int)(this.x + (this.width - font.width(line) * scale) * this.hAlign)) / scale,
+                ((int)(this.y + (this.height - font.lineHeight * lines.size() * scale) * this.vAlign)) / scale,
                 this.color, // 0xCFCFCF
                 false,
                 poseStack.last().pose(),
@@ -116,6 +130,7 @@ public class StringElement extends BookElement implements ColorableBookElement {
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeByte(2);
         super.toBytes(buf);
+        buf.writeInt(this.scale);
         buf.writeFloat(this.hAlign);
         buf.writeFloat(this.vAlign);
         buf.writeInt(this.color);
@@ -124,6 +139,7 @@ public class StringElement extends BookElement implements ColorableBookElement {
     public CompoundTag toCompound() {
         CompoundTag tag = super.toCompound();
         tag.putByte("type", (byte) 2);
+        tag.putInt("scale", this.scale);
         tag.putFloat("hAlign", this.hAlign);
         tag.putFloat("vAlign", this.vAlign);
         tag.putInt("color", this.color);

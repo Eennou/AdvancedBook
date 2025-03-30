@@ -4,6 +4,7 @@ import com.eennou.advancedbook.AdvancedBook;
 import com.eennou.advancedbook.items.ModItems;
 import com.eennou.advancedbook.screens.bookelements.BookElement;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -31,8 +32,11 @@ public class IllustrationFrameRenderer implements BlockEntityRenderer<Illustrati
             new ResourceLocation(AdvancedBook.MODID, "block/white"));
     public static final Material OVERLAY = new Material(InventoryMenu.BLOCK_ATLAS,
             new ResourceLocation(AdvancedBook.MODID, "block/illustration_frame_overlay"));
+    public static final Material SOAKED = new Material(InventoryMenu.BLOCK_ATLAS,
+            new ResourceLocation(AdvancedBook.MODID, "block/illustration_frame_soaked"));
     public static final Material DUST = new Material(InventoryMenu.BLOCK_ATLAS,
             new ResourceLocation(AdvancedBook.MODID, "block/dust"));
+    public static final MultiBufferSource.BufferSource fucking_shit = MultiBufferSource.immediate(new BufferBuilder(256));
     public static final Quaternionf CEILING_ROT = new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F);
     public static final Quaternionf WALL_ROT = new Quaternionf(Math.sqrt(2) / 2, 0.0F, 0.0F, -Math.sqrt(2) / 2);
     public static final Quaternionf FLOOR_ROT = new Quaternionf(-1.0F, 0.0F, 0.0F, 0.0F);
@@ -46,8 +50,8 @@ public class IllustrationFrameRenderer implements BlockEntityRenderer<Illustrati
         if (blockEntity.getBookElements() == null) {
             return;
         }
-        ((MultiBufferSource.BufferSource)bufferSource).endBatch();
 //        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        Minecraft.getInstance().renderBuffers().bufferSource().endLastBatch();
         poseStack.pushPose();
         poseStack.rotateAround(blockEntity.getBlockState().getValue(IllustrationFrame.FACING).getRotation(), 0.5F, 0.5F, 0.5F);
         poseStack.rotateAround(switch (blockEntity.getBlockState().getValue(IllustrationFrame.FACE)) {
@@ -71,36 +75,41 @@ public class IllustrationFrameRenderer implements BlockEntityRenderer<Illustrati
         RenderSystem.stencilOp(GL11.GL_REPLACE, GL11.GL_KEEP, GL11.GL_REPLACE);
 
         // Draw full frame
-//        GL11.glColorMask(false, false, false, false);
-        final TextureAtlasSprite tex = WHITE.sprite();
+        VertexConsumer vertexConsumer = fucking_shit.getBuffer(RenderType.translucent());
+        if (blockEntity.getBlockState().getValue(IllustrationFrame.SOAKED)) {
+            final TextureAtlasSprite soaked = SOAKED.sprite();
+            drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, soaked, 0, 16, 16, 1.0F, 0.87F);
+            fucking_shit.endLastBatch();
+        } else {
+            final TextureAtlasSprite tex = WHITE.sprite();
+            drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, tex, 0, 2, 2, 1.0F, 0.87F);
 
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.solid());
-        drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, tex, 0, 2, 2, 1.0F, 0.87F);
+            fucking_shit.endLastBatch();
 
-        ((MultiBufferSource.BufferSource)bufferSource).endLastBatch();
-//        GL11.glColorMask(true, true, true, true);
+            RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 0, 0xFF);
+            RenderSystem.stencilMask(0x00);
+            GL11.glDepthFunc(GL11.GL_ALWAYS);
+            poseStack.pushPose();
+            poseStack.translate(-256 * blockEntity.offsetX, -256 * blockEntity.offsetY, 0);
+            for (BookElement element : blockEntity.getBookElements()) {
+                element.renderInWorld(poseStack, fucking_shit, combinedLight, combinedOverlay);
+            }
+//            Minecraft.getInstance().renderBuffers().bufferSource().endBatch(RenderType.solid());
+            fucking_shit.endBatch(RenderType.translucent());
+            poseStack.popPose();
 
-        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 0, 0xFF);
-        RenderSystem.stencilMask(0x00);
-        GL11.glDepthFunc(GL11.GL_ALWAYS);
-        poseStack.pushPose();
-        poseStack.translate(-256 * blockEntity.offsetX, -256 * blockEntity.offsetY, 0);
-        for (BookElement element: blockEntity.getBookElements()) {
-            element.renderInWorld(poseStack, bufferSource, combinedLight, combinedOverlay);
+            final TextureAtlasSprite overlay = OVERLAY.sprite();
+            final TextureAtlasSprite dust = DUST.sprite();
+            vertexConsumer = fucking_shit.getBuffer(RenderType.translucent());
+            drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, overlay, 0, 16, 16, 0.2F, 0.87F);
+            drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, dust,
+                    4 * blockEntity.getBlockState().getValue(IllustrationFrame.DUST_CLEAN), 4, 16,
+                    blockEntity.getBlockState().getValue(IllustrationFrame.DUST) / 20F, 1.0F
+            );
+
+//            Minecraft.getInstance().renderBuffers().bufferSource().endLastBatch();
+            fucking_shit.endLastBatch();
         }
-        ((MultiBufferSource.BufferSource)bufferSource).endBatch(RenderType.solid());
-        poseStack.popPose();
-
-        final TextureAtlasSprite overlay = OVERLAY.sprite();
-        final TextureAtlasSprite dust = DUST.sprite();
-        vertexConsumer = bufferSource.getBuffer(RenderType.translucent());
-        drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, overlay, 0, 16, 16, 0.2F, 0.87F);
-        drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, dust,
-                4 * blockEntity.getBlockState().getValue(IllustrationFrame.DUST_CLEAN), 4, 16,
-                blockEntity.getBlockState().getValue(IllustrationFrame.DUST) / 20F, 1.0F
-        );
-
-        ((MultiBufferSource.BufferSource)bufferSource).endLastBatch();
 
         GL11.glDisable(GL11.GL_STENCIL_TEST);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
