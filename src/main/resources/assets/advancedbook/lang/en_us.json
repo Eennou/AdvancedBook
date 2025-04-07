@@ -19,7 +19,7 @@
   "item.advancedbook.book": "Book",
   "item.advancedbook.paint": "Paint",
   "itemGroup.advancedbook": "Advanced Book",
-  "item.advancedbook.illustration_frame": "Illustration Frame",
+  "block.advancedbook.illustration_frame": "Illustration Frame",
   "item.advancedbook.illustration": "Illustration",
   "gui.advancedbook.size": "Size: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "Soaked Illustration",

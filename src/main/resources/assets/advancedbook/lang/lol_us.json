@@ -18,7 +18,7 @@
   "gui.advancedbook.vAlign": "fly aling",
   "item.advancedbook.book": "papyruses",
   "item.advancedbook.paint": "colorful!!",
-  "item.advancedbook.illustration_frame": "plank for colorfuls",
+  "block.advancedbook.illustration_frame": "plank for colorfuls",
   "item.advancedbook.illustration": "colorful papyrus",
   "gui.advancedbook.size": "size: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "wet papyyrus",

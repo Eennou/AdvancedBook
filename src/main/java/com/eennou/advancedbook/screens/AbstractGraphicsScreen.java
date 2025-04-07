@@ -57,7 +57,7 @@ public abstract class AbstractGraphicsScreen extends Screen {
     protected int graphicsY;
     protected int graphicsWidth;
     protected int graphicsHeight;
-    protected int guiScale;
+    protected int guiScale = 0;
     protected Button signButton;
     private Button confirmSignButton;
     private Button cancelSignButton;

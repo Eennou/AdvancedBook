@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -52,17 +53,20 @@ public class RectangleElement extends BookElement implements ColorableBookElemen
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderInWorld(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void renderInWorld(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, int combinedLight, int combinedOverlay) {
         final TextureAtlasSprite tex = WHITE.sprite();
-        Color dimColor = new Color(this.color);
 
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.solid());
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.translucent());
         Matrix4f matrix = poseStack.last().pose();
         Vector3f topLeft = new Vector3f(this.x, this.height + this.y, 0);
         Vector3f bottomRight = new Vector3f(this.width + this.x, this.y, 0);
-        float r = dimColor.getRed() * 0.87F;
-        float g = dimColor.getGreen() * 0.87F;
-        float b = dimColor.getBlue() * 0.87F;
+        float r = FastColor.ARGB32.red(this.color) / 255.0F * 0.87F;
+        float g = FastColor.ARGB32.green(this.color) / 255.0F * 0.87F;
+        float b = FastColor.ARGB32.blue(this.color) / 255.0F * 0.87F;
+//        AdvancedBook.LOGGER.debug("{} {} {}", r, g, b);
+//        float r = 1 * 0.87F;
+//        float g = 0.5F * 0.87F;
+//        float b = 1 * 0.87F;
         vertexConsumer.vertex(matrix, topLeft.x(), topLeft.y(), topLeft.z())
             .color(r, g, b, 1F)
             .uv(tex.getU(0), tex.getV(0)).overlayCoords(combinedOverlay)

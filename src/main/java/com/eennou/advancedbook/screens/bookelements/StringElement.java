@@ -104,7 +104,7 @@ public class StringElement extends BookElement implements ColorableBookElement {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderInWorld(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void renderInWorld(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, int combinedLight, int combinedOverlay) {
         poseStack.pushPose();
         Font font = Minecraft.getInstance().font;
         List<FormattedCharSequence> lines = font.split(this.text, (this.width + 1) / scale);

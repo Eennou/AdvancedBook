@@ -1,5 +1,6 @@
 package com.eennou.advancedbook.screens.bookelements;
 
+import com.eennou.advancedbook.ClientConfig;
 import com.eennou.advancedbook.blocks.IllustrationFrameRenderer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -24,6 +25,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.Objects;
 
 import static com.eennou.advancedbook.blocks.IllustrationFrameRenderer.drawFullQuad;
+import static com.eennou.advancedbook.blocks.IllustrationFrameRenderer.fucking_shit;
 
 public class ItemElement extends BookElement {
     protected ItemStack itemStack;
@@ -64,7 +66,7 @@ public class ItemElement extends BookElement {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderInWorld(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void renderInWorld(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, int combinedLight, int combinedOverlay) {
         int minSide = Math.min(this.width, this.height);
         poseStack.pushPose();
 //        poseStack.translate(this.x, this.y, 0);
@@ -73,7 +75,7 @@ public class ItemElement extends BookElement {
         poseStack.translate(0.5, -0.5, 0);
 //        GL11.glColorMask(false, false, false, false);
 //        float[] color = RenderSystem.getShaderColor();
-        IllustrationFrameRenderer.fucking_shit.endBatch();
+        bufferSource.endBatch();
         Vector4f up = new Vector4f(0, 1, 0, 1);
         Vector4f zero = new Vector4f(0, 0, 0, 1);
         // hacky wacky way to fix odd lighting
@@ -82,20 +84,23 @@ public class ItemElement extends BookElement {
         } else {
             RenderSystem.setShaderColor(0.8F, 0.8F, 0.8F, 1.0F);
         }
+        if (ClientConfig.shaderFix) {
+            RenderSystem.setShaderColor(1.2F, 1.2F, 1.2F, 1.0F);
+        }
         RenderSystem.depthMask(true);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         Minecraft.getInstance().getItemRenderer().renderStatic(null, this.itemStack, ItemDisplayContext.GUI,
     false, poseStack, bufferSource, Minecraft.getInstance().level, combinedLight, OverlayTexture.NO_OVERLAY, 0
         );
-        IllustrationFrameRenderer.fucking_shit.endBatch();
+        bufferSource.endBatch();
         poseStack.popPose();
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.solid());
         GL11.glColorMask(false, false, false, false);
         GL11.glDepthFunc(GL11.GL_ALWAYS);
         RenderSystem.disablePolygonOffset();
-        drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, IllustrationFrameRenderer.WHITE.sprite(), 0, 2, 2, 1.0F, 0.87F);
+        drawFullQuad(poseStack, combinedLight, combinedOverlay, vertexConsumer, IllustrationFrameRenderer.WHITE.sprite(), 0, 0, 2, 2, 1.0F, 0.87F);
 
-        IllustrationFrameRenderer.fucking_shit.endLastBatch();
+        bufferSource.endLastBatch();
         RenderSystem.enablePolygonOffset();
         GL11.glColorMask(true, true, true, true);
         RenderSystem.depthMask(false);

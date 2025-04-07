@@ -4,6 +4,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(modid = AdvancedBook.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config
@@ -25,7 +26,7 @@ public class Config
     public static int illustrationMaxSize;
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event)
+    static void onLoad(final FMLCommonSetupEvent event)
     {
         dustAccumulation = DUST_ACCUMULATION.get();
         dustChance = DUST_CHANCE.get();

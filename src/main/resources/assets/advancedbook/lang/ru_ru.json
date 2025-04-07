@@ -18,7 +18,7 @@
   "gui.advancedbook.vAlign": "Вертикальное Выравнивание",
   "item.advancedbook.book": "Книга",
   "item.advancedbook.paint": "Краска",
-  "item.advancedbook.illustration_frame": "Рамка для Иллюстраций",
+  "block.advancedbook.illustration_frame": "Рамка для Иллюстраций",
   "item.advancedbook.illustration": "Иллюстрация",
   "gui.advancedbook.size": "Размер: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "Промокшая Иллюстрация",

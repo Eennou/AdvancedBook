@@ -29,11 +29,12 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
     List<BookElement> bookElements = null;
     protected short illustrationWidth;
     protected short illustrationHeight;
-    protected byte zoom = 1;
     protected Button widthDecButton;
     protected Button widthIncButton;
     protected Button heightDecButton;
     protected Button heightIncButton;
+    protected Button zoomInButton;
+    protected Button zoomOutButton;
 
     public IllustrationScreen(ItemStack itemstack) {
         super(itemstack);
@@ -49,11 +50,32 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
 
     @Override
     protected void init() {
-        this.guiScale = (int) Minecraft.getInstance().getWindow().getGuiScale();
+        if (this.guiScale == 0) {
+            this.guiScale = (int) Minecraft.getInstance().getWindow().getGuiScale();
+        }
         this.graphicsWidth = 256 * this.illustrationWidth;
         this.graphicsHeight = 256 * this.illustrationHeight;
         this.graphicsX = (this.width - this.graphicsWidth / this.guiScale) / 2;
         this.graphicsY = 16;
+        int rightBound = Math.max(this.graphicsX, 112);
+        this.zoomInButton = this.addRenderableWidget(new ImageButton(rightBound - 105, 165, 20, 20, 416, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            int scale = this.guiScale - 1;
+            if (scale < 1) {
+                return;
+            }
+            this.guiScale = scale;
+            this.rebuildWidgets();
+        }));
+        this.zoomOutButton = this.addRenderableWidget(new ImageButton(rightBound - 80, 165, 20, 20, 396, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            int scale = this.guiScale + 1;
+            if (scale > Minecraft.getInstance().getWindow().getGuiScale()) {
+                return;
+            }
+            this.guiScale = scale;
+            this.rebuildWidgets();
+        }));
+        this.zoomOutButton.active = this.guiScale < Minecraft.getInstance().getWindow().getGuiScale();
+        this.zoomInButton.active = this.guiScale > 1;
         int horCentralPos = this.graphicsX + (this.graphicsWidth / this.guiScale) / 2 + this.offsetX;
         int verCentralPos = this.graphicsY + (this.graphicsHeight / this.guiScale) / 2 + this.offsetY;
         this.widthDecButton = this.addRenderableWidget(new ImageButton(horCentralPos - 4 - 16, this.graphicsY + this.offsetY - 14, 8, 13, 496, 216, 13, BOOK_LOCATION, 512, 256, (idk) -> {
@@ -111,6 +133,8 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
         this.widthDecButton.visible = this.illustrationWidth > 1 && !isSigning;
         this.heightIncButton.visible = this.illustrationHeight < Config.illustrationMaxSize && !isSigning;
         this.heightDecButton.visible = this.illustrationHeight > 1 && !isSigning;
+        this.zoomInButton.visible = !isSigning;
+        this.zoomOutButton.visible = !isSigning;
     }
 
     @Override
