@@ -1,10 +1,8 @@
 package com.eennou.advancedbook.screens.bookelements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -12,7 +10,6 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class StringElement extends BookElement implements ColorableBookElement {
@@ -94,37 +91,12 @@ public class StringElement extends BookElement implements ColorableBookElement {
         List<FormattedCharSequence> lines = font.split(this.text, (this.width + 1) / scale);
 //        int maxWidth = lines.stream().map((x) -> font.width(x)).max(Comparator.naturalOrder()).orElse(10);
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().scale(scale, scale, 1);
         for (FormattedCharSequence line : lines) {
             guiGraphics.drawString(font, line, (int)(x + xOffset + (this.width - font.width(line) * scale) * this.hAlign) / scale, (int)(y + yOffset + (this.height - font.lineHeight * lines.size() * scale) * this.vAlign) / scale, color, false);
             yOffset += font.lineHeight * scale;
         }
         guiGraphics.pose().popPose();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void renderInWorld(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        poseStack.pushPose();
-        Font font = Minecraft.getInstance().font;
-        List<FormattedCharSequence> lines = font.split(this.text, (this.width + 1) / scale);
-        poseStack.scale(scale, scale, scale);
-        for (FormattedCharSequence line : lines) {
-            font.drawInBatch(
-                line,
-                ((int)(this.x + (this.width - font.width(line) * scale) * this.hAlign)) / scale,
-                ((int)(this.y + (this.height - font.lineHeight * lines.size() * scale) * this.vAlign)) / scale,
-                this.color, // 0xCFCFCF
-                false,
-                poseStack.last().pose(),
-                bufferSource,
-                Font.DisplayMode.NORMAL,
-                0,
-                combinedLight
-            );
-            poseStack.translate(0, font.lineHeight, 0);
-        }
-        poseStack.popPose();
     }
 
     public void toBytes(FriendlyByteBuf buf) {

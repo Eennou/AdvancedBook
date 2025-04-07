@@ -7,7 +7,12 @@ import com.eennou.advancedbook.screens.bookelements.BookElement;
 import com.eennou.advancedbook.screens.bookelements.ItemElement;
 import com.eennou.advancedbook.screens.bookelements.RectangleElement;
 import com.eennou.advancedbook.screens.bookelements.StringElement;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -19,8 +24,12 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import net.minecraft.client.Screenshot;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
