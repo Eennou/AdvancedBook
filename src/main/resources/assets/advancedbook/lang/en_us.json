@@ -23,5 +23,6 @@
   "item.advancedbook.illustration": "Illustration",
   "gui.advancedbook.size": "Size: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "Soaked Illustration",
-  "gui.advancedbook.laminated": "Laminated"
+  "gui.advancedbook.laminated": "Laminated",
+  "gui.advancedbook.remove_with_shift": "Use [shift] to remove an illustration"
 }

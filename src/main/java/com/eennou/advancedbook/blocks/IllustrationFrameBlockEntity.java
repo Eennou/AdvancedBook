@@ -1,6 +1,5 @@
 package com.eennou.advancedbook.blocks;
 
-import com.eennou.advancedbook.AdvancedBook;
 import com.eennou.advancedbook.screens.bookelements.BookElement;
 import com.eennou.advancedbook.screens.bookelements.ItemElement;
 import com.eennou.advancedbook.screens.bookelements.RectangleElement;
@@ -74,6 +73,7 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
                                 .setValue(SOAKED, false)
                                 .setValue(LAMINATED, this.illustration.contains("author"))
                             );
+                            blockEntity.setChanged();
                         }
                     }
                 }
@@ -112,7 +112,11 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
             this.getMaster().clearIllustration();
         } else {
             for (IllustrationFrameBlockEntity slave : this.slaves) {
-                slave.clearIllustrationInternal();
+                try {
+                    slave.clearIllustrationInternal();
+                } catch (Exception ignored) {
+
+                }
             }
             this.slaves.clear();
             this.clearIllustrationInternal();

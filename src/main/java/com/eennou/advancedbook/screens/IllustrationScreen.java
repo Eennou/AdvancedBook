@@ -7,12 +7,7 @@ import com.eennou.advancedbook.screens.bookelements.BookElement;
 import com.eennou.advancedbook.screens.bookelements.ItemElement;
 import com.eennou.advancedbook.screens.bookelements.RectangleElement;
 import com.eennou.advancedbook.screens.bookelements.StringElement;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -24,15 +19,14 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Matrix4f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
-import com.mojang.blaze3d.pipeline.TextureTarget;
-import net.minecraft.client.Screenshot;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@OnlyIn(Dist.CLIENT)
 public class IllustrationScreen extends AbstractGraphicsScreen {
     public static final ResourceLocation ILLUSTRATION_LOCATION = new ResourceLocation(AdvancedBook.MODID, "textures/gui/illustration.png");
     List<BookElement> bookElements = null;
@@ -67,7 +61,7 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
         this.graphicsX = (this.width - this.graphicsWidth / this.guiScale) / 2;
         this.graphicsY = 16;
         int rightBound = Math.max(this.graphicsX, 112);
-        this.zoomInButton = this.addRenderableWidget(new ImageButton(rightBound - 105, 165, 20, 20, 416, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+        this.zoomInButton = this.addRenderableWidget(new ImageButton(rightBound - 105, 58, 20, 20, 416, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
             int scale = this.guiScale - 1;
             if (scale < 1) {
                 return;
@@ -75,7 +69,7 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
             this.guiScale = scale;
             this.rebuildWidgets();
         }));
-        this.zoomOutButton = this.addRenderableWidget(new ImageButton(rightBound - 80, 165, 20, 20, 396, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+        this.zoomOutButton = this.addRenderableWidget(new ImageButton(rightBound - 80, 58, 20, 20, 396, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
             int scale = this.guiScale + 1;
             if (scale > Minecraft.getInstance().getWindow().getGuiScale()) {
                 return;
@@ -108,10 +102,10 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
             this.rebuildWidgets();
         }));
         super.init();
-        this.widthIncButton.visible = this.illustrationWidth < Config.illustrationMaxSize;
-        this.widthDecButton.visible = this.illustrationWidth > 1;
-        this.heightIncButton.visible = this.illustrationHeight < Config.illustrationMaxSize;
-        this.heightDecButton.visible = this.illustrationHeight > 1;
+        this.widthIncButton.visible = this.illustrationWidth < Config.illustrationMaxSize && !signed;
+        this.widthDecButton.visible = this.illustrationWidth > 1 && !signed;
+        this.heightIncButton.visible = this.illustrationHeight < Config.illustrationMaxSize && !signed;
+        this.heightDecButton.visible = this.illustrationHeight > 1 && !signed;
     }
 
     private void updatePositions() {
@@ -209,6 +203,8 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(guiGraphics);
         guiGraphics.pose().pushPose();
+//        guiGraphics.pose().pushPose();
+//        guiGraphics.pose().translate(0, 0, -100);
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.graphicsX, this.graphicsY, 0);
         guiGraphics.pose().translate(this.offsetX, this.offsetY, 0);
@@ -220,7 +216,7 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
             guiGraphics.drawString(this.font, String.valueOf(this.illustrationWidth), this.graphicsWidth / this.guiScale / 2 - this.font.width(String.valueOf(this.illustrationWidth)) / 2, -11, 0xFFFFFF, false);
             guiGraphics.drawString(this.font, String.valueOf(this.illustrationHeight), -10, this.graphicsHeight / this.guiScale / 2 - this.font.width(String.valueOf(this.illustrationHeight)) / 2, 0xFFFFFF, false);
         }
-        guiGraphics.pose().scale(1F / this.guiScale, 1F / this.guiScale, 1F / this.guiScale);
+        guiGraphics.pose().scale(1F / this.guiScale, 1F / this.guiScale, 1);
 
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         Minecraft.getInstance().getMainRenderTarget().enableStencil();
@@ -248,7 +244,7 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
         RenderSystem.enableBlend();
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(4, 4, 4);
+        guiGraphics.pose().scale(4, 4, 1);
         guiGraphics.blitRepeating(ILLUSTRATION_LOCATION, 0, 0, this.graphicsWidth / 4, this.graphicsHeight / 4, 0, 0, 64, 64, 128, 128);
         guiGraphics.pose().popPose();
 
@@ -259,15 +255,19 @@ public class IllustrationScreen extends AbstractGraphicsScreen {
         if (this.isSigning) {
             renderSigning(guiGraphics);
         }
-        guiGraphics.pose().translate(0, 0, 50 * this.getCurrentPage().size() + 200);
+//        guiGraphics.pose().popPose();
+//        guiGraphics.pose().translate(0, 0, 200);
 
-        super.renderWidgets(guiGraphics, mouseX, mouseY, partialTick);
         if (this.isAddElementsChanged) {
             this.isAddElementsChanged = false;
             changeAddElementsVisibility(this.isAddElementsOpened);
         }
+        guiGraphics.flush();
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+        super.renderWidgets(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.pose().translate(0, 0, 100);
         this.renderItemSearch(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.flush();
         guiGraphics.pose().popPose();
     }
 

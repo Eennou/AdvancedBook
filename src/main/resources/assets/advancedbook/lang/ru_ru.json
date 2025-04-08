@@ -22,5 +22,6 @@
   "item.advancedbook.illustration": "Иллюстрация",
   "gui.advancedbook.size": "Размер: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "Промокшая Иллюстрация",
-  "gui.advancedbook.laminated": "Ламинированно"
+  "gui.advancedbook.laminated": "Ламинированно",
+  "gui.advancedbook.remove_with_shift": "Используйте [shift] чтобы убрать иллюстрацию"
 }

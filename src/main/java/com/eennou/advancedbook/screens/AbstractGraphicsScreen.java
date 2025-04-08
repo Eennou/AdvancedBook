@@ -632,10 +632,10 @@ public abstract class AbstractGraphicsScreen extends Screen {
         if (super.mouseDragged(mouseX, mouseY, buttons, p_94702_, p_94703_)) {
             return true;
         }
+        if (mouseDraggedSpecial(mouseX, mouseY, buttons)) return true;
         if (this.signed || this.isSigning) {
             return false;
         }
-        if (mouseDraggedSpecial(mouseX, mouseY, buttons)) return true;
         if (selectedElement <= -1) {
             return false;
         }

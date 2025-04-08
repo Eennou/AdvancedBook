@@ -346,11 +346,11 @@ public class AdvancedBookScreen extends AbstractGraphicsScreen {
         }
 
         guiGraphics.pose().translate(0, 0, 50 * this.getCurrentPage().size() + 200);
-        super.renderWidgets(guiGraphics, mouseX, mouseY, partialTick);
         if (this.isAddElementsChanged) {
             this.isAddElementsChanged = false;
             changeAddElementsVisibility(this.isAddElementsOpened);
         }
+        super.renderWidgets(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.pose().translate(0, 0, 100);
         this.renderItemSearch(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.pose().popPose();

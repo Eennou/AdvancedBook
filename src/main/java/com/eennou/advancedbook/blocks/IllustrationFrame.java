@@ -1,10 +1,11 @@
 package com.eennou.advancedbook.blocks;
 
-import com.eennou.advancedbook.AdvancedBook;
 import com.eennou.advancedbook.Config;
 import com.eennou.advancedbook.items.ModItems;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -14,19 +15,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.block.state.properties.AttachFace;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import java.util.Objects;
 
 public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock implements EntityBlock {
     public static final IntegerProperty DUST = IntegerProperty.create("dust", 0, 20);
@@ -81,6 +84,8 @@ public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock im
                 itemStack.setTag(blockEntity.getIllustration());
                 player.getInventory().add(itemStack);
                 blockEntity.clearIllustration();
+            } else if (level.isClientSide()) {
+                Minecraft.getInstance().gui.setOverlayMessage(Component.translatable("gui.advancedbook.remove_with_shift"), false);
             }
             return false;
         }

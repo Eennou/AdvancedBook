@@ -22,5 +22,6 @@
   "item.advancedbook.illustration": "colorful papyrus",
   "gui.advancedbook.size": "size: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "wet papyyrus",
-  "gui.advancedbook.laminated": "protectut"
+  "gui.advancedbook.laminated": "protectut",
+  "gui.advancedbook.remove_with_shift": "pres [shift] to put in paws"
 }

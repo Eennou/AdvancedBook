@@ -1,24 +1,18 @@
 package com.eennou.advancedbook.blocks;
 
 import com.eennou.advancedbook.AdvancedBook;
-import com.eennou.advancedbook.items.ModItems;
 import com.eennou.advancedbook.screens.bookelements.BookElement;
-import com.eennou.advancedbook.screens.bookelements.RectangleElement;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexSorting;
-import me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,23 +20,15 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 @OnlyIn(Dist.CLIENT)
@@ -60,9 +46,9 @@ public static final ResourceLocation OVERLAY = new ResourceLocation(AdvancedBook
             .expireAfterAccess(4, TimeUnit.MINUTES)
             .removalListener((RemovalListener<Integer, ResourceLocation>) notification -> Minecraft.getInstance().getTextureManager().release(notification.getValue()))
             .build();
-    private final BlockEntityRendererProvider.Context context;
+//    private final BlockEntityRendererProvider.Context context;
     public IllustrationFrameRenderer(BlockEntityRendererProvider.Context context) {
-        this.context = context;
+//        this.context = context;
     }
     @Override
     public void render(IllustrationFrameBlockEntity blockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
@@ -85,7 +71,6 @@ public static final ResourceLocation OVERLAY = new ResourceLocation(AdvancedBook
         }, 0.5F, 0.5F, 0.5F);
         poseStack.translate(0, 1F, 1 / 16F);
         poseStack.scale(1 / 256F, -1 / 256F, 1 / 256F);
-
         RenderSystem.enablePolygonOffset();
         RenderSystem.polygonOffset(-1.0F, -10.0F);
         RenderSystem.depthMask(false);
@@ -186,8 +171,8 @@ public static final ResourceLocation OVERLAY = new ResourceLocation(AdvancedBook
 
     protected ResourceLocation renderToTexture(IllustrationFrameBlockEntity blockEntity) {
         CompoundTag illustration = blockEntity.getIllustration();
-        int width = illustration.getShort("width") * 256;
-        int height = illustration.getShort("height") * 256;
+        int width = Math.max(1, illustration.getShort("width")) * 256;
+        int height = Math.max(1, illustration.getShort("height")) * 256;
         RenderTarget renderTarget = new TextureTarget(width, height, true, Minecraft.ON_OSX);
         Minecraft minecraft = Minecraft.getInstance();
         try {
@@ -196,7 +181,7 @@ public static final ResourceLocation OVERLAY = new ResourceLocation(AdvancedBook
             RenderSystem.enableDepthTest();
             RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.clearDepth(1.0F);
-            RenderSystem.setShaderFogColor(0, 0, 0, 0);
+            FogRenderer.setupNoFog();
             RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
             Matrix4f matrix4f = (new Matrix4f()).setOrtho(0.0F, (float) width, (float) height, 0.0F, 1000.0F, net.minecraftforge.client.ForgeHooksClient.getGuiFarPlane());
             RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
