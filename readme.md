@@ -8,7 +8,11 @@
 Advanced book is a mod that adds graphics to books! You can create books with picture of items, text and other graphic elements.
 ## Overview
 ![700](./imgs/overview.png)
-## Recipes
+# Illustrations
+Now you can create illustrations and put them in frames! Sign your illustrations to lock them and protect from dust and rain! You don't want soaked illustration, right? Works on all tested shaders (for Complementary use version 5 and above).
+
+![700](./imgs/stone_beach.png)
+## Content
 <details>
 <summary>Book</summary>
 
@@ -16,8 +20,21 @@ Advanced book is a mod that adds graphics to books! You can create books with pi
 </details>
 <details>
 <summary>Book Cloning</summary>
+Clone book's content in another book.
 
 ![300](./imgs/book_cloning_recipe.png)
+</details>
+<details>
+<summary>Illustration</summary>
+You can put them in Illustration Frame.
+
+![300](./imgs/illustration_recipe.png)
+</details>
+<details>
+<summary>Illustration Frame</summary>
+Place your wonderful Illustrations in world!
+
+![300](./imgs/illustration_frame_recipe.png)
 </details>
 <details>
 <summary>Paint</summary>
@@ -29,4 +46,3 @@ Advanced book is a mod that adds graphics to books! You can create books with pi
 - English (en_us)
 - Russian (ru_ru)
 - LOLCAT (lol_us)
-
