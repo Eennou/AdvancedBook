@@ -56,7 +56,7 @@ public class AdvancedBookScreen extends AbstractGraphicsScreen {
         this.graphicsX = (this.width - this.graphicsWidth) / 2;
         this.graphicsY = 8;
         this.guiScale = 1;
-        this.pagesCount = this.itemstack.getOrCreateTag().getList("pages", ListTag.TAG_LIST).size();
+        this.pagesCount = Math.max(1, this.itemstack.getOrCreateTag().getList("pages", ListTag.TAG_LIST).size());
         this.bookmarks = new ArrayList<>();
         this.pages = new HashMap<>();
         if (!this.itemstack.getOrCreateTag().contains("pages")) {

@@ -22,6 +22,7 @@ import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 public class IllustrationFrameBlockEntity extends BlockEntity {
     public List<BookElement> getBookElements() {
         if (this.isSlave()) {
+            if (this.getMaster() == null) return null;
             return this.getMaster().getBookElements();
         }
         return this.bookElements;

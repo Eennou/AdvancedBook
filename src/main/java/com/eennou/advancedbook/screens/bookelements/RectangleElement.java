@@ -1,18 +1,12 @@
 package com.eennou.advancedbook.screens.bookelements;
 
-import com.eennou.advancedbook.AdvancedBook;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class RectangleElement extends BookElement implements ColorableBookElement {
-    private static final Material WHITE = new Material(InventoryMenu.BLOCK_ATLAS,
-            new ResourceLocation(AdvancedBook.MODID, "block/white"));
     protected int color;
     public RectangleElement(int x, int y, int width, int height, int color) {
         super(x, y, width, height);

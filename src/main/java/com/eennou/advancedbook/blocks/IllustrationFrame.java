@@ -27,9 +27,13 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock implements EntityBlock {
     public static final IntegerProperty DUST = IntegerProperty.create("dust", 0, 20);
@@ -38,7 +42,7 @@ public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock im
     public static final Property<Boolean> LAMINATED = BooleanProperty.create("laminated");
 
     public IllustrationFrame(Properties properties) {
-        super(properties.noOcclusion().sound(SoundType.WOOD).randomTicks().destroyTime(3));
+        super(properties.destroyTime(1F).noOcclusion().sound(SoundType.WOOD).randomTicks());
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FACE, AttachFace.WALL).setValue(DUST, 0).setValue(DUST_CLEAN, 0).setValue(SOAKED, false).setValue(LAMINATED, false));
     }
 
@@ -53,6 +57,13 @@ public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock im
             .setValue(DUST_CLEAN, dust > 0 ? Math.min(blockState.getValue(DUST_CLEAN) + 1, dust < 4 ? 3 : 2) : 0)
         );
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState p_287732_, LootParams.Builder p_287596_) {
+        ArrayList<ItemStack> itemStacks = new ArrayList<>();
+        itemStacks.add(new ItemStack(ModItems.ILLUSTRATION_FRAME.get()));
+        return itemStacks;
     }
 
     @Override
