@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -101,6 +102,15 @@ public class IllustrationFrame extends FaceAttachedHorizontalDirectionalBlock im
             return false;
         }
         return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+    }
+
+    @Override
+    public void onBlockExploded(BlockState state, Level level, BlockPos pos, Explosion explosion) {
+        IllustrationFrameBlockEntity blockEntity = (IllustrationFrameBlockEntity) level.getExistingBlockEntity(pos);
+        if (blockEntity != null) {
+            blockEntity.clearIllustration();
+        }
+        super.onBlockExploded(state, level, pos, explosion);
     }
 
     @Override

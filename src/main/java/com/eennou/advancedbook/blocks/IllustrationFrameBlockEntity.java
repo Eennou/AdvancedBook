@@ -8,6 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -135,6 +138,7 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
                 .setValue(DUST_CLEAN, 0)
         );
         this.setChanged();
+        this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
     }
 
     private List<BookElement> bookElements;
@@ -190,6 +194,8 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        this.illustration = null;
+        this.bookElements = null;
         if (tag.contains("illustration")) {
             this.illustration = tag.getCompound("illustration");
             if (this.level != null) {
@@ -232,6 +238,19 @@ public class IllustrationFrameBlockEntity extends BlockEntity {
             tag.putShort("offsetY", this.offsetY);
         }
         return tag;
+    }
+
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        CompoundTag compoundtag = pkt.getTag();
+        if (compoundtag == null) {
+            compoundtag = new CompoundTag();
+        }
+        this.load(compoundtag);
     }
 
     @Override

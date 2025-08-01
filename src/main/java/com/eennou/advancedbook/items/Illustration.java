@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -30,7 +31,7 @@ public class Illustration extends Item {
     public Illustration(Properties properties) {
         super(properties);
     }
-    @OnlyIn(Dist.CLIENT)
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
@@ -40,6 +41,8 @@ public class Illustration extends Item {
             CompoundTag illustration = ((IllustrationFrameBlockEntity) blockEntity).getIllustration();
             ((IllustrationFrameBlockEntity) blockEntity).setBookElements(itemstack.getOrCreateTag(), true);
             blockEntity.setChanged();
+            level.sendBlockUpdated(blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity.getBlockState(), Block.UPDATE_CLIENTS);
+            level.setBlocksDirty(blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity.getBlockState());
             itemstack.shrink(1);
             if (illustration != null) {
                 ItemStack givenItemStack = new ItemStack(ModItems.ILLUSTRATION.get(), 1);
@@ -49,9 +52,13 @@ public class Illustration extends Item {
             return InteractionResultHolder.success(itemstack);
         }
         if (level.isClientSide()) {
-            Minecraft.getInstance().setScreen(new IllustrationScreen(itemstack));
+            this.openIllustration(itemstack);
         }
         return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
+    }
+    @OnlyIn(Dist.CLIENT)
+    private void openIllustration(ItemStack itemstack) {
+        Minecraft.getInstance().setScreen(new IllustrationScreen(itemstack));
     }
 
     @Override
