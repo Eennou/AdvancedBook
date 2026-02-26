@@ -14,6 +14,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,6 +40,10 @@ public abstract class AbstractGraphicsScreen extends Screen {
     protected List<ImageButton> alignElementButtons;
     private ImageButton fontScaleInc;
     private ImageButton fontScaleDec;
+    private ImageButton fontBoldButton;
+    private ImageButton fontItalicButton;
+    private ImageButton fontUnderlineButton;
+    private ImageButton fontStrikethroughButton;
     protected boolean isAddElementsOpened = false;
     protected boolean isAddElementsChanged = true;
     protected Button elementFGButton;
@@ -88,6 +93,7 @@ public abstract class AbstractGraphicsScreen extends Screen {
 //        this.titleEditBox.setTextColor(0x000000);
         this.searchBox = this.addWidget(new EditBox(this.font, this.editBoxElement.getX() - 195 - 5 + 82, this.editBoxElement.getY() - 66 + 10 + 6, 80, 9, Component.translatable("itemGroup.search")));
         this.searchBox.setBordered(false);
+        this.searchBox.setVisible(false);
         this.searchBox.setResponder((search) -> this.searchResults = getItems(search));
         this.loadInitialPage();
 
@@ -105,7 +111,7 @@ public abstract class AbstractGraphicsScreen extends Screen {
     }
 
     private void createElementEditControls() {
-        int leftBound = Math.min(this.graphicsX + this.graphicsWidth / this.guiScale + 16, this.width - 152);
+        int leftBound = Math.min(this.graphicsX + this.graphicsWidth / this.guiScale + 26, this.width - 152);
         this.hueSlider = this.addRenderableWidget(new HueSlider(leftBound + 78, 33, 0, (slider) -> {
             this.sbSliders.setColor(Color.HSBtoRGB(slider.getValue(), 1, 1));
             if (selectedElement > -1) {
@@ -195,6 +201,7 @@ public abstract class AbstractGraphicsScreen extends Screen {
                 }
             }
         }));
+        this.fontScaleInc.setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.fontInc")));
         this.fontScaleDec = this.addRenderableWidget(new ImageButton(leftBound + 20, 165, 20, 20, 436, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
             if (this.selectedElement != -1) {
                 BookElement element = this.getCurrentElement();
@@ -209,6 +216,35 @@ public abstract class AbstractGraphicsScreen extends Screen {
                 }
             }
         }));
+        this.fontScaleDec.setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.fontDec")));
+        this.fontBoldButton = this.addRenderableWidget(new ImageButton(leftBound + 45, 165, 20, 20, 316, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            BookElement element = this.getCurrentElement();
+            if (element instanceof StringElement) {
+                ((StringElement) element).applyFormatting(Style.EMPTY.withBold(true));
+            }
+        }));
+        this.fontBoldButton.setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.fontBold")));
+        this.fontItalicButton = this.addRenderableWidget(new ImageButton(leftBound + 65, 165, 20, 20, 336, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            BookElement element = this.getCurrentElement();
+            if (element instanceof StringElement) {
+                ((StringElement) element).applyFormatting(Style.EMPTY.withItalic(true));
+            }
+        }));
+        this.fontItalicButton.setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.fontItalic")));
+        this.fontUnderlineButton = this.addRenderableWidget(new ImageButton(leftBound + 85, 165, 20, 20, 356, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            BookElement element = this.getCurrentElement();
+            if (element instanceof StringElement) {
+                ((StringElement) element).applyFormatting(Style.EMPTY.withUnderlined(true));
+            }
+        }));
+        this.fontUnderlineButton.setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.fontUnderline")));
+        this.fontStrikethroughButton = this.addRenderableWidget(new ImageButton(leftBound + 105, 165, 20, 20, 376, 122, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+            BookElement element = this.getCurrentElement();
+            if (element instanceof StringElement) {
+                ((StringElement) element).applyFormatting(Style.EMPTY.withStrikethrough(true));
+            }
+        }));
+        this.fontStrikethroughButton.setTooltip(Tooltip.create(Component.translatable("gui.advancedbook.fontStrikethrough")));
     }
 
     protected abstract void specialColorChange();
@@ -371,35 +407,42 @@ public abstract class AbstractGraphicsScreen extends Screen {
         this.sbSliders.visible = (elementSelected && colorableElement) || bookmarkSelected;
         this.copyButton.active = elementSelected;
         this.cutButton.active = elementSelected;
-        this.editBoxElement.visible = elementSelected;
+        this.editBoxElement.visible = false;
         this.openSearchButton.visible = false;
         this.fontScaleInc.visible = false;
         this.fontScaleDec.visible = false;
+        this.fontBoldButton.visible = false;
+        this.fontItalicButton.visible = false;
+        this.fontUnderlineButton.visible = false;
+        this.fontStrikethroughButton.visible = false;
         for (Button button : this.alignElementButtons) {
             button.visible = false;
         }
         if (elementSelected) {
             BookElement element = getCurrentPage().get(index);
             if (element instanceof StringElement) {
-                this.editBoxElement.setResponder((text) -> {
-                    ((StringElement) element).setText(Component.literal(text));
-                });
-                this.editBoxElement.setValue(((StringElement) element).getText().getString());
+//                this.editBoxElement.setResponder((text) -> {
+//                    ((StringElement) element).setText(Component.literal(text));
+//                });
+//                this.editBoxElement.setValue(((StringElement) element).getText().getString());
                 for (Button button : this.alignElementButtons) {
                     button.visible = true;
                 }
                 this.fontScaleInc.visible = true;
                 this.fontScaleDec.visible = true;
+                this.fontBoldButton.visible = true;
+                this.fontItalicButton.visible = true;
+                this.fontUnderlineButton.visible = true;
+                this.fontStrikethroughButton.visible = true;
                 this.fontScaleInc.active = ((StringElement) element).getScale() < 40;
                 this.fontScaleDec.active = ((StringElement) element).getScale() > 1;
             } else if (element instanceof ItemElement) {
+                this.editBoxElement.visible = true;
                 this.editBoxElement.setResponder((text) -> {
                     ((ItemElement) element).setItem(text);
                 });
                 this.editBoxElement.setValue(((ItemElement) element).getItem());
                 this.openSearchButton.visible = true;
-            } else {
-                this.editBoxElement.visible = false;
             }
         }
         this.elementFGButton.visible = elementSelected;
@@ -460,12 +503,18 @@ public abstract class AbstractGraphicsScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int key, int p_96553_, int modifiers) {
-        if (super.keyPressed(key, p_96553_, modifiers)) {
+    public boolean keyPressed(int key, int scan, int modifiers) {
+        if (super.keyPressed(key, scan, modifiers)) {
             return true;
         }
         if (this.selectedElement <= -1) {
             return false;
+        }
+        double elMouseX = (Minecraft.getInstance().mouseHandler.xpos() / Minecraft.getInstance().getWindow().getGuiScale() - this.graphicsX) * this.guiScale;
+        double elMouseY = (Minecraft.getInstance().mouseHandler.ypos() / Minecraft.getInstance().getWindow().getGuiScale() - this.graphicsY) * this.guiScale;
+        if (this.getCurrentElement().isIntersected(elMouseX, elMouseY, offsetX * this.guiScale, offsetY * this.guiScale) && this.getCurrentElement().keyPressed(key, scan, modifiers)) {
+            this.setFocused(null);
+            return true;
         }
         boolean alt = (modifiers & 0b100) == 0b100;
         boolean ctrl = (modifiers & 0b10) == 0b10;
@@ -523,6 +572,14 @@ public abstract class AbstractGraphicsScreen extends Screen {
         return true;
     }
 
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if (this.selectedElement >= -1 && this.getCurrentElement().charTyped(chr, modifiers)) {
+            return true;
+        }
+        return super.charTyped(chr, modifiers);
+    }
+
     private int getSnap(int direction) {
         int idk = switch (direction) {
             case 0 -> // UP
@@ -574,6 +631,7 @@ public abstract class AbstractGraphicsScreen extends Screen {
             int startY = this.editBoxElement.getY() - 66 + 10;
             if (!(startX <= mouseX && mouseX < startX + 195 && startY <= mouseY && mouseY < startY + 132)) {
                 this.showItemSearch = false;
+                updateItemSearch();
             } else {
                 int gridStartX = this.editBoxElement.getX() - 195 - 5 + 9;
                 int gridStartY = this.editBoxElement.getY() - 66 + 10 + 18;
@@ -582,6 +640,7 @@ public abstract class AbstractGraphicsScreen extends Screen {
                 if (gridStartX <= mouseX && selectedX < 10 && gridStartY <= mouseY && selectedY < 6) {
                     this.editBoxElement.setValue(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.searchResults.get(selectedY * 10 + selectedX))).toString());
                     this.showItemSearch = false;
+                    updateItemSearch();
                 }
             }
             return true;
@@ -590,17 +649,26 @@ public abstract class AbstractGraphicsScreen extends Screen {
             return true;
         }
         if (mouseReleaseSpecial(mouseX, mouseY, buttons)) return true;
-        if (this.signed || this.isSigning) {
+        if (this.signed || this.isSigning || buttons != 0) {
             return false;
         }
         if (isDragging) {
             isDragging = false;
+            if (this.selectedElement > -1 && this.getCurrentElement().mouseRelease(
+                (mouseX - this.graphicsX - this.offsetX) * this.guiScale,
+                (mouseY - this.graphicsY - this.offsetY) * this.guiScale, buttons)
+            ) return true;
             return false;
         }
         boolean intersected = false;
         for (int ii = this.getCurrentPage().size() - 1; ii >= 0; ii--) {
             BookElement element = this.getCurrentPage().get(ii);
             if (element.isIntersected((mouseX - this.graphicsX) * this.guiScale, (mouseY - this.graphicsY) * this.guiScale, this.offsetX * this.guiScale, this.offsetY * this.guiScale)) {
+                if (element.mouseRelease(
+                    (mouseX - this.graphicsX - this.offsetX) * this.guiScale,
+                    (mouseY - this.graphicsY - this.offsetY) * this.guiScale, buttons)
+                    && ii == this.selectedElement
+                ) return true;
                 if (ii == this.selectedElement) {
                     intersected = true;
                     continue;
@@ -681,6 +749,10 @@ public abstract class AbstractGraphicsScreen extends Screen {
                 element.height = (int) ((mouseY - this.graphicsY - this.offsetY) * this.guiScale - element.y);
                 break;
             case -1:
+                if (element.mouseDragged(
+                        (mouseX - this.graphicsX - this.offsetX) * this.guiScale,
+                        (mouseY - this.graphicsY - this.offsetY) * this.guiScale, buttons)
+                ) return true;
                 element.x = (int) (mouseX - this.graphicsX) * this.guiScale - mouseDragOffsetX;
                 element.y = (int) (mouseY - this.graphicsY) * this.guiScale - mouseDragOffsetY;
                 break;

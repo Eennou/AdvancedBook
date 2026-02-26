@@ -24,5 +24,11 @@
   "gui.advancedbook.size": "Size: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "Soaked Illustration",
   "gui.advancedbook.laminated": "Laminated",
-  "gui.advancedbook.remove_with_shift": "Use [shift] to remove an illustration"
+  "gui.advancedbook.remove_with_shift": "Use [shift] to remove an illustration",
+  "gui.advancedbook.fontInc": "Bigger Font",
+  "gui.advancedbook.fontDec": "Smaller Font",
+  "gui.advancedbook.fontBold": "Bold",
+  "gui.advancedbook.fontItalic": "Italic",
+  "gui.advancedbook.fontUnderline": "Underline",
+  "gui.advancedbook.fontStrikethrough": "Strikethrough"
 }

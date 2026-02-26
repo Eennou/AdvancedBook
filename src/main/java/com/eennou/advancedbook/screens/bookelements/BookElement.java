@@ -1,9 +1,7 @@
 package com.eennou.advancedbook.screens.bookelements;
 
 import com.eennou.advancedbook.screens.AdvancedBookScreen;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
@@ -64,6 +62,22 @@ public abstract class BookElement implements Cloneable {
             return 3;
         }
         return -1;
+    }
+
+    public boolean mouseRelease(double mouseX, double mouseY, int buttons) {
+        return false;
+    }
+
+    public boolean mouseDragged(double mouseX, double mouseY, int buttons) {
+        return false;
+    }
+
+    public boolean keyPressed(int key, int scan, int modifiers) {
+        return false;
+    }
+
+    public boolean charTyped(char chr, int modifiers) {
+        return false;
     }
 
     @Override

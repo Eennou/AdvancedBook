@@ -66,7 +66,7 @@ public class AdvancedBookScreen extends AbstractGraphicsScreen {
         }
         this.currentPage = Math.min(this.itemstack.getOrCreateTag().getInt("openedPage"), this.pagesCount - 1);
         this.createPageControlButtons();
-        this.bookmarkButton = this.addRenderableWidget(new ImageButton(this.graphicsX + this.graphicsWidth / this.guiScale + 16, 8, 20, 20, 476, 182, 20, BOOK_LOCATION, 512, 256, (idk) -> {
+        this.bookmarkButton = this.addRenderableWidget(new ImageButton(this.graphicsX + this.graphicsWidth / this.guiScale + 26, 8, 20, 20, 476, 182, 20, BOOK_LOCATION, 512, 256, (idk) -> {
             this.switchBookmark(this.currentPage, this.bookmarks.stream().max(Comparator.comparingInt(x -> x.position)).map(x -> x.position).orElse(-1) + 1, Color.HSBtoRGB(this.hueSlider.getValue(), this.sbSliders.getSaturation(), this.sbSliders.getBrightness()));
         }));
         super.init();
@@ -364,7 +364,7 @@ public class AdvancedBookScreen extends AbstractGraphicsScreen {
 
     @Override
     protected void renderSelectedSpecial(GuiGraphics guiGraphics) {
-        guiGraphics.blitNineSlicedSized(BOOK_LOCATION, this.graphicsWidth / this.guiScale - 13, this.bookmarks.get(-2 - selectedElement).position * 15, 35, 15, 8, 8, 32, 32, 0, 218, 512, 256);
+        guiGraphics.blitNineSlicedSized(BOOK_LOCATION, this.graphicsWidth / this.guiScale - 5, this.bookmarks.get(-2 - selectedElement).position * 15, 27, 15, 8, 8, 32, 32, 0, 218, 512, 256);
     }
 
     @Override
@@ -395,8 +395,8 @@ public class AdvancedBookScreen extends AbstractGraphicsScreen {
     }
 
     @Override
-    protected boolean mouseReleaseSpecial(double mouseX, double mouseY, int buttons) {
-        if (this.width / 2 + 50 <= mouseX && this.width / 2 + 50 + 35 > mouseX && !this.isSigning) {
+    protected boolean mouseReleaseSpecial(double mouseX, double mouseY, int buttons) { // TODO: fix that horrible thing
+        if (this.width / 2 + 62 <= mouseX && this.width / 2 + 58 + 27 > mouseX && !this.isSigning) {
             int j = 0;
             for (Bookmark bookmark : bookmarks) {
                 if (bookmark.position * 15 + 8 <= mouseY && bookmark.position * 15 + 8 + 15 > mouseY && -2 - j != selectedElement) {

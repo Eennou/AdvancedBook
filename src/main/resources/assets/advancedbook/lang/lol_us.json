@@ -23,5 +23,11 @@
   "gui.advancedbook.size": "size: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "wet papyyrus",
   "gui.advancedbook.laminated": "protectut",
-  "gui.advancedbook.remove_with_shift": "pres [shift] to put in paws"
+  "gui.advancedbook.remove_with_shift": "pres [shift] to put in paws",
+  "gui.advancedbook.fontInc": "bih writ",
+  "gui.advancedbook.fontDec": "smol writ",
+  "gui.advancedbook.fontBold": "fat",
+  "gui.advancedbook.fontItalic": "fallin",
+  "gui.advancedbook.fontUnderline": "impotant",
+  "gui.advancedbook.fontStrikethrough": "nevemint"
 }

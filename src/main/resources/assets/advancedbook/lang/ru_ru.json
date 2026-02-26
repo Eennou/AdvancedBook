@@ -23,5 +23,11 @@
   "gui.advancedbook.size": "Размер: %1$sx%2$s",
   "item.advancedbook.soaked_illustration": "Промокшая Иллюстрация",
   "gui.advancedbook.laminated": "Ламинированно",
-  "gui.advancedbook.remove_with_shift": "Используйте [shift] чтобы убрать иллюстрацию"
+  "gui.advancedbook.remove_with_shift": "Используйте [shift] чтобы убрать иллюстрацию",
+  "gui.advancedbook.fontInc": "Больше Шрифт",
+  "gui.advancedbook.fontDec": "Меньше Шрифт",
+  "gui.advancedbook.fontBold": "Жирный",
+  "gui.advancedbook.fontItalic": "Курсив",
+  "gui.advancedbook.fontUnderline": "Подчёркнутый",
+  "gui.advancedbook.fontStrikethrough": "Перечёркнутый"
 }
