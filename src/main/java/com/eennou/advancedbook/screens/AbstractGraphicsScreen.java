@@ -448,7 +448,7 @@ public abstract class AbstractGraphicsScreen extends Screen {
         this.elementFGButton.visible = elementSelected;
         this.elementBGButton.visible = elementSelected;
         this.elementDeleteButton.visible = elementSelected;
-        this.elementFGButton.active = index < getCurrentPage().size() - 1;
+        this.elementFGButton.active = index != -1 && index < getCurrentPage().size() - 1;
         this.elementBGButton.active = index != 0;
         this.selectedElement = index;
     }
@@ -574,7 +574,7 @@ public abstract class AbstractGraphicsScreen extends Screen {
 
     @Override
     public boolean charTyped(char chr, int modifiers) {
-        if (this.selectedElement >= -1 && this.getCurrentElement().charTyped(chr, modifiers)) {
+        if (this.selectedElement > -1 && this.getCurrentElement().charTyped(chr, modifiers)) {
             return true;
         }
         return super.charTyped(chr, modifiers);

@@ -219,6 +219,7 @@ public class AdvancedBookScreen extends AbstractGraphicsScreen {
     }
 
     protected void loadPage(int index) {
+        this.changeSelectedElement(-1);
         if (!this.itemstack.hasTag()) {
             return;
         }
@@ -238,7 +239,6 @@ public class AdvancedBookScreen extends AbstractGraphicsScreen {
                         throw new IllegalStateException("Unexpected value: " + ((CompoundTag) elementTag).getByte("type"));
             });
         }
-        this.changeSelectedElement(-1);
         this.updateButtonVisibility();
     }
 
